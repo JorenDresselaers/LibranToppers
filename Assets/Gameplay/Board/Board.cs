@@ -1,0 +1,59 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Board : MonoBehaviour
+{
+    [SerializeField] private int _maxCards = 5; // Maximum number of cards the board can hold
+    //[SerializeField] private float _spacing = 1.5f;  // Space between cards
+    [SerializeField] private Vector3 _startPosition = new Vector3(-3f, 0, 0); // Starting position of the first card
+    [SerializeField] private BoxCollider _collider; // Collider for board size determination
+
+    private List<Card> _cards = new List<Card>(); // List to hold current cards on the board
+
+    private void Awake()
+    {
+        if (!_collider)
+        {
+            _collider = GetComponent<BoxCollider>();
+        }
+
+        _startPosition.x = -_collider.size.x / 2;
+    }
+
+    public bool AddCard(Card card)
+    {
+        if (_cards.Count >= _maxCards)
+        {
+            Debug.Log("Board is full");
+            return false;
+        }
+
+        card.transform.SetParent(transform);
+        PlaceCard(card);
+        _cards.Add(card);
+        return true;
+    }
+
+    private void PlaceCard(Card card)
+    {
+        float boardWidth = _collider.size.x;
+        float cardWidth = boardWidth / _maxCards;
+        float startX = (_collider.bounds.min.x + _collider.bounds.max.x) / 2 - boardWidth / 2 + cardWidth / 2; // centering cards
+
+        float xPosition = startX + (_cards.Count * (cardWidth));
+        card.transform.localPosition = new Vector3(xPosition, _startPosition.y, _startPosition.z);
+    }
+
+    private void UpdateCardPositions()
+    {
+        float boardWidth = _collider.size.x;
+        float cardWidth = boardWidth / _maxCards;
+        float startX = (_collider.bounds.min.x + _collider.bounds.max.x) / 2 - boardWidth / 2 + cardWidth / 2;
+
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            float xPosition = startX + (i * (cardWidth));
+            _cards[i].transform.localPosition = new Vector3(xPosition, _startPosition.y, _startPosition.z);
+        }
+    }
+}

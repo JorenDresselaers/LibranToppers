@@ -1,15 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _cardsRemainingText;
     [SerializeField] private GameObject _cardPrefab;
     [SerializeField] private List<CardData> _cardsData = new List<CardData>();
 
     private void Awake()
     {
         _cardsData = _cardsData.ToList();
+        ShuffleCards();
+        UpdateText();
     }
 
     public GameObject CreateCard()
@@ -22,6 +26,9 @@ public class Deck : MonoBehaviour
                 GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
                 card.GetComponent<Card>().Initialize(data);
                 _cardsData.RemoveAt(0);
+
+                UpdateText();
+
                 return card;
             }
             _cardsData.RemoveAt(0);
@@ -54,4 +61,11 @@ public class Deck : MonoBehaviour
             card.GetComponent<Card>().BeginDrag();
         }
     }
+
+    private void UpdateText()
+    {
+        if (!_cardsRemainingText) return;
+        _cardsRemainingText.text = _cardsData.Count.ToString();
+    }
+
 }

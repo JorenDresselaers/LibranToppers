@@ -49,18 +49,19 @@ public class Card : MonoBehaviour
     private LineRenderer _lineRenderer;
     private bool _isDragging = false;
     private Vector3 _startPosition;
+    [SerializeField] private bool _isDraggable = false;
 
     private void Awake()
     {
         if(_debugData) Initialize(_debugData);
 
-        _lineRenderer = GetComponent<LineRenderer>();
+        _lineRenderer = GetComponentInChildren<LineRenderer>();
         _lineRenderer.positionCount = 2;
         _lineRenderer.enabled = false;
 
     }
 
-    public void Initialize(CardData data)
+    public void Initialize(CardData data, bool isDraggable = true)
     {
         _data = data;
         _cardName = data.cardName;
@@ -76,6 +77,8 @@ public class Card : MonoBehaviour
 
         RemoveNullAbilities();
         UpdateText();
+
+        _isDraggable = isDraggable;
     }
 
     private void RemoveNullAbilities()
@@ -113,8 +116,17 @@ public class Card : MonoBehaviour
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.WorldToScreenPoint(_startPosition).z));
             mousePos.z = _startPosition.z; // Ensure the z position is constant
 
-            _lineRenderer.SetPosition(0, _startPosition);
-            _lineRenderer.SetPosition(1, mousePos);
+            if (_isDraggable)
+            {
+                transform.position = mousePos;
+            }
+            else
+            {
+                float lineRendererZOffset = -1f;
+
+                _lineRenderer.SetPosition(0, new Vector3(_startPosition.x, _startPosition.y, _startPosition.z + lineRendererZOffset));
+                _lineRenderer.SetPosition(1, new Vector3(mousePos.x, mousePos.y, mousePos.z + lineRendererZOffset));
+            }
         }
     }
 
@@ -122,7 +134,7 @@ public class Card : MonoBehaviour
     {
         _startPosition = transform.position;
         _isDragging = true;
-        _lineRenderer.enabled = true;
+        if(!_isDraggable) _lineRenderer.enabled = true;
     }
 
     private void OnMouseUp()
@@ -131,21 +143,14 @@ public class Card : MonoBehaviour
         {
             _isDragging = false;
             _lineRenderer.enabled = false;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider != null)
-                {
-                    OnDragComplete(hit.transform.root.GetComponentInChildren<Card>());
-                }
-            }
+            EndDrag();
         }
     }
 
     private void OnDragComplete(Card other)
     {
+        if (!other) return;
+
         Debug.Log("Drag Complete with " + other.name);
         if(other)
         {
@@ -184,7 +189,45 @@ public class Card : MonoBehaviour
 
     private void EndDrag()
     {
-        // Optionally add logic to snap the card to a new position or interact with other game objects
+        if (_isDraggable) //Interact with what it's dropped on
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100f, LayerMask.GetMask("Board")))
+            {
+                Board board = hit.collider.GetComponent<Board>();
+                if (board != null)
+                {
+                    if (board.AddCard(this))
+                    {
+                        _isDraggable = false;
+                        return;
+                    }
+                }
+            }
+
+            // If not dropped on a board, or board is full, reset position or handle otherwise
+            ResetPosition();
+        }
+        else //Interact with other cards
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100f, LayerMask.GetMask("Card")))
+            {
+                if (hit.collider != null)
+                {
+                    OnDragComplete(hit.transform.GetComponent<Card>());
+                }
+            }
+        }
+
+    }
+
+    private void ResetPosition()
+    {
+        // Logic to reset the card's position if it's not added to the board
+        transform.position = _startPosition; // or any other default position
     }
 
     #endregion
