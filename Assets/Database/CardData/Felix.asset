@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b23fc09c485ec541b287b1506808176, type: 3}
+  m_Name: Felix
+  m_EditorClassIdentifier: 
+  cardName: Felix Erythem Aurior
+  vitality: 3
+  damage: 5
+  description: 'When played, <b>Felix</b> summons <b>Crabbicus</b> and <b>Yroh</b>
+    to the field if they are in your deck. Him and his two summons then immediately
+    attack the enemy ahead of <b>Felix</b>. '
+  image: {fileID: 21300000, guid: 093c2c6d4bcab59429953f8f0b3503d3, type: 3}
+  faction: 1
+  alignment: 2
+  rarity: 0
+  isGolden: 0
+  abilities:
+  - {fileID: 11400000, guid: c75c3e94d744e054a939f32d45d67e26, type: 2}
