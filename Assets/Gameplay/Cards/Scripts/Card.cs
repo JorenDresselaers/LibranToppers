@@ -21,6 +21,10 @@ public class Card : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _alignmentText;
     [SerializeField] private Image _image;
 
+    [Header("Scene Objects")]
+    public Player _player;
+    private Board _board;
+
     //[Header("Prefabs")]
 
     [Header("Materials")]
@@ -31,7 +35,7 @@ public class Card : MonoBehaviour
     private string _cardName;
     private int _damage;
     private int _vitality;
-    private List<CardAbility> _abilities;
+    private List<CardAbility> _abilities; //should probably be split up in lists per ability type
     private string _description;
     private Sprite _sprite;
     private CardData.Faction _faction;
@@ -58,7 +62,6 @@ public class Card : MonoBehaviour
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _lineRenderer.positionCount = 2;
         _lineRenderer.enabled = false;
-
     }
 
     public void Initialize(CardData data, bool isDraggable = true)
@@ -160,9 +163,12 @@ public class Card : MonoBehaviour
 
     private void Interact(Card card)
     {
-        foreach(CardAbility ability in _abilities)
+        foreach (CardAbility ability in _abilities)
         {
-            ability.Activate(this, card);
+            if (ability.AbilityTrigger == CardAbility.Trigger.ASSAULT)
+            {
+                ability.Activate(this, card);
+            }
         }
     }
 
@@ -201,6 +207,8 @@ public class Card : MonoBehaviour
                     if (board.AddCard(this))
                     {
                         _isDraggable = false;
+                        _board = board;
+                        OnPlayed();
                         return;
                     }
                 }
@@ -246,6 +254,65 @@ public class Card : MonoBehaviour
         _damage += assault;
 
         UpdateText();
+    }
+
+    #endregion
+    #region Ability Triggers
+
+    private void TriggerAbility(CardAbility.Trigger trigger)
+    {
+        foreach (CardAbility ability in _abilities)
+        {
+            if (ability != null && ability.AbilityTrigger == trigger)
+            {
+                ability.Activate(this);
+            }
+        }
+    }
+
+    private void OnPlayed()
+    {
+        TriggerAbility(CardAbility.Trigger.PLAYED);
+    }
+
+    public void OnEnterBoard()
+    {
+        TriggerAbility(CardAbility.Trigger.ENTEREDBOARD);
+    }
+
+    private void OnDeath()
+    {
+        TriggerAbility(CardAbility.Trigger.DEATH);
+    }
+
+    private void OnDrawn()
+    {
+        TriggerAbility(CardAbility.Trigger.DRAWN);
+    }
+
+    private void OnAssault()
+    {
+
+    }
+
+    private void OnDefend()
+    {
+
+    }
+
+    private void OnOtherCardDefends()
+    {
+
+    }
+
+    private void OnStartOfTurn()
+    {
+
+    }
+
+    private void OnEndOfTurn()
+    {
+
     }
 
     #endregion

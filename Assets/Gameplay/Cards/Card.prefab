@@ -34,9 +34,9 @@ RectTransform:
   - {fileID: 2637267932252111657}
   - {fileID: 2155087857484949964}
   - {fileID: 6629454346573228117}
+  - {fileID: 407265134988251312}
   - {fileID: 2280543351334338224}
   - {fileID: 7501062397452786796}
-  - {fileID: 407265134988251312}
   - {fileID: 3683864391552751205}
   m_Father: {fileID: 3860008864215357251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -496,8 +496,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.48
-  m_fontSizeBase: 37.48
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -512,7 +512,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -869,8 +869,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.48
-  m_fontSizeBase: 37.48
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -885,7 +885,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}

@@ -15,7 +15,8 @@ public class CardAbility : ScriptableObject
         DEATH,
         STARTOFTURN,
         ENDOFTURN,
-        OTHERCARDDEFENDS
+        OTHERCARDDEFENDS,
+        ENTEREDBOARD
     }
     [SerializeField] protected Trigger _abilityTrigger;
     public Trigger AbilityTrigger => _abilityTrigger;
@@ -27,6 +28,9 @@ public class CardAbility : ScriptableObject
     public virtual void Activate(Card caster, List<Card> targets)
     { }
     public virtual void Activate(Card caster, Card target)
+    { }
+    
+    public virtual void Activate(Card caster)
     { }
 
     protected virtual bool CanTargetCard(Card caster, Card target)

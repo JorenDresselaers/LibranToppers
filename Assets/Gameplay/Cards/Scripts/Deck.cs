@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    public Player _player;
     [SerializeField] private TextMeshProUGUI _cardsRemainingText;
     [SerializeField] private GameObject _cardPrefab;
     [SerializeField] private DeckData _deckdata;
     private List<CardData> _cardsData = new List<CardData>();
+    public List<CardData> CardsData => _cardsData;
     [SerializeField] private Hand _hand;
     [SerializeField] private bool _moveCardToHand = true;
 
@@ -28,6 +30,7 @@ public class Deck : MonoBehaviour
             {
                 GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
                 card.GetComponent<Card>().Initialize(data);
+                card.GetComponent<Card>()._player = _player;
                 _cardsData.RemoveAt(0);
 
                 UpdateText();
@@ -35,6 +38,28 @@ public class Deck : MonoBehaviour
                 return card;
             }
             _cardsData.RemoveAt(0);
+        }
+        return null;
+    }
+    
+    public GameObject CreateCard(CardData cardToCreate)
+    {
+        foreach(CardData data in _cardsData)
+        {
+            if(data == cardToCreate)
+            {
+                GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
+                card.GetComponent<Card>().Initialize(data);
+                card.GetComponent<Card>()._player = _player;
+                _cardsData.RemoveAt(0);
+
+                UpdateText();
+
+                _cardsData.Remove(data);
+                ShuffleCards();
+
+                return card;
+            }
         }
         return null;
     }

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    public Player _player;
     [SerializeField] private int _maxCards = 5; // Maximum number of cards the board can hold
     //[SerializeField] private float _spacing = 1.5f;  // Space between cards
     [SerializeField] private Vector3 _startPosition = new Vector3(-3f, 0, 0); // Starting position of the first card
@@ -10,6 +11,7 @@ public class Board : MonoBehaviour
     [SerializeField] private Hand _hand; 
 
     private List<Card> _cards = new List<Card>(); // List to hold current cards on the board
+    public List<Card> Cards => _cards;
 
     private void Awake()
     {

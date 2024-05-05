@@ -3,11 +3,14 @@ using UnityEngine;
 
 public class Hand : MonoBehaviour
 {
+    public Player _player;
     [SerializeField] private int _maxCards = 10; // Maximum number of cards the hand can hold
     [SerializeField] private BoxCollider _collider; // Collider for hand size determination
     [SerializeField] private float maxTiltAngle = 15f; // Maximum angle cards will tilt at the edges
 
     private List<Card> _cards = new List<Card>(); // List to store cards in hand
+    public List<Card> Cards => _cards;
+
 
     private void Awake()
     {
