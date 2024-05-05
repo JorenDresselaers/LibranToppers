@@ -7,11 +7,14 @@ public class Deck : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _cardsRemainingText;
     [SerializeField] private GameObject _cardPrefab;
-    [SerializeField] private List<CardData> _cardsData = new List<CardData>();
+    [SerializeField] private DeckData _deckdata;
+    private List<CardData> _cardsData = new List<CardData>();
+    [SerializeField] private Hand _hand;
+    [SerializeField] private bool _moveCardToHand = true;
 
     private void Awake()
     {
-        _cardsData = _cardsData.ToList();
+        _cardsData = _deckdata.cards.ToList();
         ShuffleCards();
         UpdateText();
     }
@@ -57,8 +60,17 @@ public class Deck : MonoBehaviour
         GameObject card = CreateCard();
         if (card != null)
         {
-            // Begin dragging the card
-            card.GetComponent<Card>().BeginDrag();
+            if(_moveCardToHand)
+            {
+                if(!_hand.AddCard(card.GetComponent<Card>()))
+                {
+                    Destroy(card);
+                }
+            }
+            else
+            {
+                card.GetComponent<Card>().BeginDrag();
+            }
         }
     }
 

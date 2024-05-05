@@ -7,6 +7,7 @@ public class Board : MonoBehaviour
     //[SerializeField] private float _spacing = 1.5f;  // Space between cards
     [SerializeField] private Vector3 _startPosition = new Vector3(-3f, 0, 0); // Starting position of the first card
     [SerializeField] private BoxCollider _collider; // Collider for board size determination
+    [SerializeField] private Hand _hand; 
 
     private List<Card> _cards = new List<Card>(); // List to hold current cards on the board
 
@@ -29,8 +30,13 @@ public class Board : MonoBehaviour
         }
 
         card.transform.SetParent(transform);
+        card.transform.localRotation = Quaternion.identity;
+        card.transform.localScale = Vector3.one;
         PlaceCard(card);
         _cards.Add(card);
+        if(_hand) _hand.RemoveCard(card);
+
+        UpdateCardPositions();
         return true;
     }
 
