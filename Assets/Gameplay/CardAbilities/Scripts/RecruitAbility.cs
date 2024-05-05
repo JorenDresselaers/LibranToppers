@@ -9,6 +9,11 @@ public class RecruitAbility : CardAbility
     [SerializeField] private List<string> _recruitNames = new();
     [SerializeField] private int _recruitCount = 1;
 
+    private void Awake()
+    {
+        _abilityTrigger = Trigger.PLAYED;
+    }
+
     public override void Activate(Card caster, List<Card> targets)
     {
         throw new System.NotImplementedException();

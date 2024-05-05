@@ -165,7 +165,7 @@ public class Card : MonoBehaviour
     {
         foreach (CardAbility ability in _abilities)
         {
-            if (ability.AbilityTrigger == CardAbility.Trigger.ASSAULT)
+            if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
             {
                 ability.Activate(this, card);
             }
@@ -263,7 +263,7 @@ public class Card : MonoBehaviour
     {
         foreach (CardAbility ability in _abilities)
         {
-            if (ability != null && ability.AbilityTrigger == trigger)
+            if (ability != null && ability._abilityTrigger == trigger)
             {
                 ability.Activate(this);
             }

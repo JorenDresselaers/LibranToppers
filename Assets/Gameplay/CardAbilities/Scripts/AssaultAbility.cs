@@ -6,6 +6,11 @@ using UnityEngine;
 [Serializable, CreateAssetMenu(menuName = "Abilities/Assault", fileName = "AssaultAbility")]
 public class AssaultAbility : CardAbility
 {
+
+    private void Awake()
+    {
+        _abilityTrigger = Trigger.ASSAULT;
+    }
     public override void Activate(Card caster, List<Card> targets)
     {
         throw new System.NotImplementedException();

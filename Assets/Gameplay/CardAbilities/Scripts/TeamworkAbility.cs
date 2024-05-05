@@ -12,6 +12,11 @@ public class TeamworkAbility : CardAbility
     [SerializeField] private bool _buffSelf = true;
     [SerializeField] private bool _canStack = true;
 
+    private void Awake()
+    {
+        _abilityTrigger = Trigger.PLAYED;
+    }
+
     public override void Activate(Card caster, List<Card> targets)
     {
         throw new System.NotImplementedException();

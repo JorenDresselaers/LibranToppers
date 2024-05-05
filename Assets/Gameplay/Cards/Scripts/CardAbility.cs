@@ -18,8 +18,7 @@ public class CardAbility : ScriptableObject
         OTHERCARDDEFENDS,
         ENTEREDBOARD
     }
-    [SerializeField] protected Trigger _abilityTrigger;
-    public Trigger AbilityTrigger => _abilityTrigger;
+    public Trigger _abilityTrigger;
 
     //Add a struct that detects targets and whether or not they're valid
     public struct AbilityTarget
