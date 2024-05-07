@@ -1,7 +1,8 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hand : MonoBehaviour
+public class Hand : NetworkBehaviour
 {
     public Player _player;
     [SerializeField] private int _maxCards = 10; // Maximum number of cards the hand can hold

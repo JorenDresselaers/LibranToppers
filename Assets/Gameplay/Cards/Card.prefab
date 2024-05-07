@@ -119,6 +119,8 @@ GameObject:
   - component: {fileID: 3860008864215357251}
   - component: {fileID: 3560793073005455123}
   - component: {fileID: 5097252319232498224}
+  - component: {fileID: 5392161821196909281}
+  - component: {fileID: 7079900008329153192}
   m_Layer: 7
   m_Name: Card
   m_TagString: Untagged
@@ -156,6 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deea1319bdffb87449418fe72f5929b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _debugData: {fileID: 0}
   _meshRenderer: {fileID: 645534311935536142}
   _nameText: {fileID: 8595958137675730025}
@@ -165,6 +170,7 @@ MonoBehaviour:
   _factionText: {fileID: 8199341643212447329}
   _alignmentText: {fileID: 5489970515856093392}
   _image: {fileID: 7223032829131729290}
+  _player: {fileID: 0}
   _defaultCardMaterial: {fileID: 2100000, guid: f1cf65b1649293c41a070818c58bd5ae, type: 2}
   _goldenCardMaterial: {fileID: 2100000, guid: 4c78f2ebfa01e2946b69577ff5b1e81e, type: 2}
   _isDraggable: 0
@@ -195,6 +201,57 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5392161821196909281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270599761263542591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 372814632
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &7079900008329153192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270599761263542591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 3860008864215357251}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1 &1765364416939538250
 GameObject:
   m_ObjectHideFlags: 0

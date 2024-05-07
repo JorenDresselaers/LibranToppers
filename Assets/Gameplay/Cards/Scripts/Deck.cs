@@ -1,9 +1,10 @@
+using Mirror;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class Deck : MonoBehaviour
+public class Deck : NetworkBehaviour
 {
     public Player _player;
     [SerializeField] private TextMeshProUGUI _cardsRemainingText;
@@ -31,6 +32,8 @@ public class Deck : MonoBehaviour
                 GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
                 card.GetComponent<Card>().Initialize(data);
                 card.GetComponent<Card>()._player = _player;
+
+                NetworkServer.Spawn(card);
                 _cardsData.RemoveAt(0);
 
                 UpdateText();
@@ -104,5 +107,4 @@ public class Deck : MonoBehaviour
         if (!_cardsRemainingText) return;
         _cardsRemainingText.text = _cardsData.Count.ToString();
     }
-
 }

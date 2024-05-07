@@ -1,7 +1,8 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Board : MonoBehaviour
+public class Board : NetworkBehaviour
 {
     public Player _player;
     [SerializeField] private int _maxCards = 5; // Maximum number of cards the board can hold

@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,4 +35,31 @@ public class CardAbility : ScriptableObject
 
     protected virtual bool CanTargetCard(Card caster, Card target)
     { return true; }
+}
+
+public static class AbilityDataSerializer
+{
+    public static void WriteCardData(this NetworkWriter writer, CardAbility data)
+    {
+        if (data) writer.WriteString(data.name);
+    }
+
+    public static CardAbility ReadCardData(this NetworkReader reader)
+    {
+        string resourceName = reader.ReadString();
+        resourceName = "ScriptableObjects/CardData/Abilities/" + resourceName;
+        if (string.IsNullOrEmpty(resourceName))
+        {
+            Debug.LogWarning("Invalid or missing resource name during deserialization.");
+            return null; // or return a default CardData instance
+        }
+
+        CardAbility data = Resources.Load<CardAbility>(resourceName);
+        if (data == null)
+        {
+            Debug.LogWarning("Failed to load CardData resource: " + resourceName);
+        }
+
+        return data;
+    }
 }

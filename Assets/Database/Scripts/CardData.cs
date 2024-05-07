@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,4 +45,31 @@ public class CardData : ScriptableObject
     public bool isGolden;
 
     public List<CardAbility> abilities = new();
+}
+
+public static class CardDataSerializer
+{
+    public static void WriteCardData(this NetworkWriter writer, CardData data)
+    {
+        if(data) writer.WriteString(data.name);
+    }
+
+    public static CardData ReadCardData(this NetworkReader reader)
+    {
+        string resourceName = reader.ReadString();
+        resourceName = "ScriptableObjects/CardData/" + resourceName;
+        if (string.IsNullOrEmpty(resourceName))
+        {
+            Debug.LogWarning("Invalid or missing resource name during deserialization.");
+            return null; // or return a default CardData instance
+        }
+
+        CardData data = Resources.Load<CardData>(resourceName);
+        if (data == null)
+        {
+            Debug.LogWarning("Failed to load CardData resource: " + resourceName);
+        }
+
+        return data;
+    }
 }

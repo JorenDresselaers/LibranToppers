@@ -13,7 +13,10 @@ public class AssaultAbility : CardAbility
     }
     public override void Activate(Card caster, List<Card> targets)
     {
-        throw new System.NotImplementedException();
+        foreach(Card card in targets)
+        {
+            card.Assault(caster.Damage);
+        }
     }
 
     public override void Activate(Card caster, Card target)
@@ -23,6 +26,6 @@ public class AssaultAbility : CardAbility
 
     protected override bool CanTargetCard(Card caster, Card target)
     {
-        return target != caster;
+        return target != caster && !caster._player.Board.Cards.Contains(target);
     }
 }

@@ -19,12 +19,12 @@ public class TeamworkAbility : CardAbility
 
     public override void Activate(Card caster, List<Card> targets)
     {
-        throw new System.NotImplementedException();
+        Activate(caster);
     }
 
     public override void Activate(Card caster, Card target)
     {
-        throw new System.NotImplementedException();
+        Activate(caster);
     }
 
     public override void Activate(Card caster)

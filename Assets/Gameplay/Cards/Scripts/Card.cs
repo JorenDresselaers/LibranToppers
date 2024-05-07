@@ -5,10 +5,12 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class Card : MonoBehaviour
+public class Card : NetworkBehaviour
 {
     [SerializeField] private CardData _debugData;
+    [SyncVar]
     private CardData _data;
 
     [Header("Prefab Objects")]
@@ -22,7 +24,7 @@ public class Card : MonoBehaviour
     [SerializeField] private Image _image;
 
     [Header("Scene Objects")]
-    public Player _player;
+    [SyncVar] public Player _player;
     private Board _board;
 
     //[Header("Prefabs")]
@@ -32,16 +34,16 @@ public class Card : MonoBehaviour
     [SerializeField] private Material _goldenCardMaterial;
 
     //Data
-    private string _cardName;
-    private int _damage;
-    private int _vitality;
+    [SyncVar] private string _cardName;
+    [SyncVar] private int _damage;
+    [SyncVar] private int _vitality;
     private List<CardAbility> _abilities; //should probably be split up in lists per ability type
-    private string _description;
+    [SyncVar] private string _description;
     private Sprite _sprite;
-    private CardData.Faction _faction;
-    private CardData.Alignment _alignment;
-    private CardData.Rarity _rarity;
-    private bool _isGolden;
+    [SyncVar] private CardData.Faction _faction;
+    [SyncVar] private CardData.Alignment _alignment;
+    [SyncVar] private CardData.Rarity _rarity;
+    [SyncVar] private bool _isGolden;
 
     public string CardName => _cardName;
     public int Damage => _damage;
@@ -52,8 +54,16 @@ public class Card : MonoBehaviour
     //Interaction Logic
     private LineRenderer _lineRenderer;
     private bool _isDragging = false;
-    private Vector3 _startPosition;
+    [SyncVar] private Vector3 _startPosition;
     [SerializeField] private bool _isDraggable = false;
+
+
+    private bool CanInteract => _player.connectionToClient == NetworkClient.connection || _player.connectionToServer == NetworkClient.connection;
+
+    public override void OnStartClient()
+    {
+        Initialize(_data);
+    }
 
     private void Awake()
     {
@@ -66,6 +76,12 @@ public class Card : MonoBehaviour
 
     public void Initialize(CardData data, bool isDraggable = true)
     {
+        if(data == null)
+        {
+            if (_data) data = _data;
+            else return;
+        }
+
         _data = data;
         _cardName = data.cardName;
         _damage = data.damage;
@@ -135,6 +151,8 @@ public class Card : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!CanInteract) return;
+
         _startPosition = transform.position;
         _isDragging = true;
         if(!_isDraggable) _lineRenderer.enabled = true;
@@ -142,6 +160,8 @@ public class Card : MonoBehaviour
 
     private void OnMouseUp()
     {
+        if (!CanInteract) return;
+
         if (_isDragging)
         {
             _isDragging = false;
