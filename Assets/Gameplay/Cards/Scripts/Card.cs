@@ -24,7 +24,7 @@ public class Card : NetworkBehaviour
     [SerializeField] private Image _image;
 
     [Header("Scene Objects")]
-    [SyncVar] public Player _player;
+    public Player _player;
     private Board _board;
 
     //[Header("Prefabs")]
@@ -53,12 +53,12 @@ public class Card : NetworkBehaviour
 
     //Interaction Logic
     private LineRenderer _lineRenderer;
-    private bool _isDragging = false;
+    [SyncVar] private bool _isDragging = false;
     [SyncVar] private Vector3 _startPosition;
-    [SerializeField] private bool _isDraggable = false;
+    [SerializeField, SyncVar] private bool _isDraggable = false;
 
 
-    private bool CanInteract => _player.connectionToClient == NetworkClient.connection || _player.connectionToServer == NetworkClient.connection;
+    private bool CanInteract => _player.gameObject == NetworkClient.localPlayer.gameObject;
 
     public override void OnStartClient()
     {
@@ -125,7 +125,7 @@ public class Card : NetworkBehaviour
         if (_image) _image.sprite = _sprite;
         if (_factionText) _factionText.text = _faction == CardData.Faction.None ? "" : _faction.ToString();
         if (_alignmentText) _alignmentText.text = _alignment == CardData.Alignment.None ? "" : _alignment.ToString();
-        if(_meshRenderer) _meshRenderer.material = _isGolden ? Instantiate(_goldenCardMaterial) : Instantiate(_defaultCardMaterial);
+        if (_meshRenderer) _meshRenderer.material = _isGolden ? Instantiate(_goldenCardMaterial) : Instantiate(_defaultCardMaterial);
     }
 
     void Update()
@@ -190,6 +190,19 @@ public class Card : NetworkBehaviour
                 ability.Activate(this, card);
             }
         }
+        card.CmdUpdateCard();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdUpdateCard()
+    {
+        RpcUpdateCard();
+    }
+
+    [ClientRpc]
+    private void RpcUpdateCard()
+    {
+        UpdateText();
     }
 
     #region Dragging
@@ -259,7 +272,6 @@ public class Card : NetworkBehaviour
     }
 
     #endregion
-
     #region Interactions
 
     public void Assault(int damage)
@@ -288,6 +300,7 @@ public class Card : NetworkBehaviour
                 ability.Activate(this);
             }
         }
+        UpdateText();
     }
 
     private void OnPlayed()

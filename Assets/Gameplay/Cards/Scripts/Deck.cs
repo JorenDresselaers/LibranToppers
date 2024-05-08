@@ -33,7 +33,7 @@ public class Deck : NetworkBehaviour
                 card.GetComponent<Card>().Initialize(data);
                 card.GetComponent<Card>()._player = _player;
 
-                NetworkServer.Spawn(card);
+                NetworkServer.Spawn(card, _player.gameObject);
                 _cardsData.RemoveAt(0);
 
                 UpdateText();
@@ -63,6 +63,13 @@ public class Deck : NetworkBehaviour
                 card.GetComponent<Card>().BeginDrag();
             }
         }
+        RpcUpdateText();
+    }
+
+    [ClientRpc]
+    private void RpcUpdateText()
+    {
+        UpdateText();
     }
 
     public GameObject CreateCard(CardData cardToCreate)

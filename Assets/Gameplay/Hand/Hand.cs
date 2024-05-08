@@ -9,9 +9,8 @@ public class Hand : NetworkBehaviour
     [SerializeField] private BoxCollider _collider; // Collider for hand size determination
     [SerializeField] private float maxTiltAngle = 15f; // Maximum angle cards will tilt at the edges
 
-    private List<Card> _cards = new List<Card>(); // List to store cards in hand
+    private List<Card> _cards = new(); // List to store cards in hand
     public List<Card> Cards => _cards;
-
 
     private void Awake()
     {
@@ -31,8 +30,6 @@ public class Hand : NetworkBehaviour
         }
 
         CmdReparentCard(card);
-        _cards.Add(card);
-        UpdateCardPositions();
         return true;
     }
 
@@ -47,7 +44,10 @@ public class Hand : NetworkBehaviour
     {
         card.transform.SetParent(transform);
         card.transform.localScale = Vector3.one;
-
+        card.transform.localPosition = Vector3.zero;
+        card._player = _player;
+        _cards.Add(card);
+        UpdateCardPositions();
     }
 
     // Method to remove a card from the hand
@@ -56,7 +56,6 @@ public class Hand : NetworkBehaviour
         if (_cards.Contains(card))
         {
             _cards.Remove(card);
-            //Destroy(card.gameObject); // Optional: only if you want to destroy the card object
             UpdateCardPositions();
         }
     }
