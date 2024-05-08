@@ -128,6 +128,12 @@ public class Card : NetworkBehaviour
         if (_meshRenderer) _meshRenderer.material = _isGolden ? Instantiate(_goldenCardMaterial) : Instantiate(_defaultCardMaterial);
     }
 
+    private IEnumerator UpdateTextCoroutine(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        UpdateText();
+    }
+
     void Update()
     {
         if (_isDragging)
@@ -177,8 +183,21 @@ public class Card : NetworkBehaviour
         Debug.Log("Drag Complete with " + other.name);
         if(other)
         {
-            Interact(other);
+            CmdInteract(other);
         }
+    }
+
+    [Command]
+    private void CmdInteract(Card card)
+    {
+        foreach (CardAbility ability in _abilities)
+        {
+            if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
+            {
+                ability.Activate(this, card);
+            }
+        }
+        RpcUpdateCard();
     }
 
     private void Interact(Card card)
@@ -199,10 +218,13 @@ public class Card : NetworkBehaviour
         RpcUpdateCard();
     }
 
+    /// <summary>
+    /// Updates after .1 seconds to ensure data has arrived
+    /// </summary>
     [ClientRpc]
     private void RpcUpdateCard()
     {
-        UpdateText();
+        StartCoroutine(UpdateTextCoroutine(0.1f));
     }
 
     #region Dragging
@@ -237,13 +259,7 @@ public class Card : NetworkBehaviour
                 Board board = hit.collider.GetComponent<Board>();
                 if (board != null)
                 {
-                    if (board.AddCard(this))
-                    {
-                        _isDraggable = false;
-                        _board = board;
-                        OnPlayed();
-                        return;
-                    }
+                    CmdAddToBoard(board);
                 }
             }
 
@@ -265,6 +281,25 @@ public class Card : NetworkBehaviour
 
     }
 
+    [Command]
+    private void CmdAddToBoard(Board board)
+    {
+        RpcAddToBoard(board);
+    }
+
+    [ClientRpc]
+    private void RpcAddToBoard(Board board)
+    {
+        if (board.AddCard(this))
+        {
+            _isDraggable = false;
+            _board = board;
+            OnPlayed();
+            return;
+        }
+    }
+
+
     private void ResetPosition()
     {
         // Logic to reset the card's position if it's not added to the board
@@ -277,7 +312,7 @@ public class Card : NetworkBehaviour
     public void Assault(int damage)
     {
         _vitality -= damage;
-        UpdateText();
+        CmdUpdateCard();
     }
 
     public void ModifyStats(int assault, int vitality)
@@ -285,7 +320,7 @@ public class Card : NetworkBehaviour
         _vitality += vitality;
         _damage += assault;
 
-        UpdateText();
+        CmdUpdateCard();
     }
 
     #endregion
@@ -300,7 +335,7 @@ public class Card : NetworkBehaviour
                 ability.Activate(this);
             }
         }
-        UpdateText();
+        CmdUpdateCard();
     }
 
     private void OnPlayed()
