@@ -11,7 +11,7 @@ public class StartMirrorServer : MonoBehaviour
         // Start the Mirror server if it's not already running
         if (!NetworkServer.active)
         {
-            NetworkManager.singleton.StartServer();
+            NetworkManager.singleton.StartHost();
         }
     }
 

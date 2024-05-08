@@ -30,11 +30,24 @@ public class Hand : NetworkBehaviour
             return false;
         }
 
-        card.transform.SetParent(transform);
-        card.transform.localScale = Vector3.one;
+        CmdReparentCard(card);
         _cards.Add(card);
         UpdateCardPositions();
         return true;
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdReparentCard(Card card)
+    {
+        RpcReparentCard(card);
+    }
+
+    [ClientRpc]
+    private void RpcReparentCard(Card card)
+    {
+        card.transform.SetParent(transform);
+        card.transform.localScale = Vector3.one;
+
     }
 
     // Method to remove a card from the hand

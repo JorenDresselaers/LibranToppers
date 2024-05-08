@@ -44,7 +44,27 @@ public class Deck : NetworkBehaviour
         }
         return null;
     }
-    
+
+    [Command]
+    private void CmdCreateCard()
+    {
+        GameObject card = CreateCard();
+        if (card != null)
+        {
+            if (_moveCardToHand)
+            {
+                if (!_hand.AddCard(card.GetComponent<Card>()))
+                {
+                    Destroy(card);
+                }
+            }
+            else
+            {
+                card.GetComponent<Card>().BeginDrag();
+            }
+        }
+    }
+
     public GameObject CreateCard(CardData cardToCreate)
     {
         foreach(CardData data in _cardsData)
@@ -85,21 +105,25 @@ public class Deck : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        GameObject card = CreateCard();
-        if (card != null)
-        {
-            if(_moveCardToHand)
-            {
-                if(!_hand.AddCard(card.GetComponent<Card>()))
-                {
-                    Destroy(card);
-                }
-            }
-            else
-            {
-                card.GetComponent<Card>().BeginDrag();
-            }
-        }
+        if (!isLocalPlayer) return;
+
+        CmdCreateCard();
+
+        //GameObject card = CreateCard();
+        //if (card != null)
+        //{
+        //    if(_moveCardToHand)
+        //    {
+        //        if(!_hand.AddCard(card.GetComponent<Card>()))
+        //        {
+        //            Destroy(card);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        card.GetComponent<Card>().BeginDrag();
+        //    }
+        //}
     }
 
     private void UpdateText()
