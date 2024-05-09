@@ -25,8 +25,9 @@ public class Card : NetworkBehaviour
     [SerializeField] private Image _image;
 
     [Header("Scene Objects")]
-    public Player _player;
-    private Board _board;
+    [SyncVar] public Player _player;
+    [SyncVar] private Board _board;
+    public Board Board => _board;
 
     //[Header("Prefabs")]
 
@@ -62,7 +63,12 @@ public class Card : NetworkBehaviour
     [SyncVar] private Vector3 _startPosition;
     [SerializeField, SyncVar] private bool _isDraggable = false;
 
-    private bool CanInteract => _player.gameObject == NetworkClient.localPlayer.gameObject;
+    [SyncVar] private int _interactionsPerTurn = 1;
+    [SyncVar] private int _interactionsLeft = 0;
+
+    private bool CanInteract => _interactionsLeft > 0;
+    private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
+    public bool _isClickable = false;
 
     public override void OnStartClient()
     {
@@ -74,7 +80,6 @@ public class Card : NetworkBehaviour
     {
         Flip();
     }
-
 
     private void Awake()
     {
@@ -107,6 +112,8 @@ public class Card : NetworkBehaviour
 
         RemoveNullAbilities();
         UpdateText();
+
+        _interactionsLeft = _interactionsPerTurn;
 
         _isDraggable = isDraggable;
     }
@@ -209,16 +216,19 @@ public class Card : NetworkBehaviour
 
     private void OnMouseDown()
     {
-        if (!CanInteract) return;
+        if (!IsOwnedByClient || !_isClickable) return;
 
-        _startPosition = transform.position;
-        _isDragging = true;
-        if(!_isDraggable) _lineRenderer.enabled = true;
+        if (CanInteract || _isDraggable)
+        {
+            _startPosition = transform.position;
+            _isDragging = true;
+            if (!_isDraggable) _lineRenderer.enabled = true;
+        }
     }
 
     private void OnMouseUp()
     {
-        if (!CanInteract) return;
+        if (!IsOwnedByClient || !_isClickable) return;
 
         if (_isDragging)
         {
@@ -262,6 +272,7 @@ public class Card : NetworkBehaviour
             }
         }
         card.CmdUpdateCard();
+        _interactionsLeft--;
     }
 
     [Command(requiresAuthority = false)]
@@ -333,8 +344,8 @@ public class Card : NetworkBehaviour
 
     }
 
-    [Command]
-    private void CmdAddToBoard(Board board)
+    [Command(requiresAuthority = false)]
+    public void CmdAddToBoard(Board board)
     {
         RpcAddToBoard(board);
     }
@@ -362,6 +373,11 @@ public class Card : NetworkBehaviour
 
     #endregion
     #region Interactions
+
+    private void TakeAction()
+    {
+
+    }
 
     public void Assault(int damage)
     {
@@ -414,27 +430,28 @@ public class Card : NetworkBehaviour
 
     private void OnAssault()
     {
-
+        TriggerAbility(CardAbility.Trigger.ASSAULT);
     }
 
     private void OnDefend()
     {
-
+        TriggerAbility(CardAbility.Trigger.DEFEND);
     }
 
     private void OnOtherCardDefends()
     {
-
+        TriggerAbility(CardAbility.Trigger.OTHERCARDDEFENDS);
     }
 
-    private void OnStartOfTurn()
+    public void OnStartOfTurn()
     {
-
+        _interactionsLeft = _interactionsPerTurn;
+        TriggerAbility(CardAbility.Trigger.STARTOFTURN);
     }
 
-    private void OnEndOfTurn()
+    public void OnEndOfTurn()
     {
-
+        TriggerAbility(CardAbility.Trigger.ENDOFTURN);
     }
 
     #endregion

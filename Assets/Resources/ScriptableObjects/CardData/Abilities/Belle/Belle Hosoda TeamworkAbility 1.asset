@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a56fb43dd1c99b41ad5bfc0ff17a898, type: 3}
-  m_Name: TeamworkAbility
+  m_Name: Belle Hosoda TeamworkAbility 1
   m_EditorClassIdentifier: 
   _abilityTrigger: 1
   _teamworkNames:
   - Navari of House Dawngrasp
-  _assaultBuff: 50
-  _vitalityBuff: 0
+  _assaultBuff: 0
+  _vitalityBuff: 3
   _buffSelf: 1
   _canStack: 0

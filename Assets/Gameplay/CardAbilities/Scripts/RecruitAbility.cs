@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,20 +27,51 @@ public class RecruitAbility : CardAbility
 
     public override void Activate(Card caster)
     {
+        //Deck deck = caster._player.Deck;
+        //Board board = caster._player.Board;
+        //int recruitCount = 0;
+        //
+        //if (!deck || !board) return;
+        //
+        //foreach (CardData cardData in deck.CardsData)
+        //{
+        //    if (_recruitNames.Contains(cardData.cardName))
+        //    {
+        //        Card recruitedCard = deck.CreateCard(cardData).GetComponent<Card>();
+        //        caster._player.Board.AddCard(recruitedCard);
+        //        Debug.Log($"{caster.CardName} recruited {recruitedCard.CardName}");
+        //
+        //        recruitCount++;
+        //
+        //        if(recruitCount >= _recruitCount)
+        //        {
+        //            return;
+        //        }
+        //    }
+        //}
+        CmdActivate(caster);
+    }
+
+    [Command]
+    private void CmdActivate(Card caster)
+    {
         Deck deck = caster._player.Deck;
+        Board board = caster.Board;
         int recruitCount = 0;
+
+        if (!deck || !board || board.IsFull) return;
 
         foreach (CardData cardData in deck.CardsData)
         {
             if (_recruitNames.Contains(cardData.cardName))
             {
                 Card recruitedCard = deck.CreateCard(cardData).GetComponent<Card>();
-                caster._player.Board.AddCard(recruitedCard);
+                recruitedCard.CmdAddToBoard(caster._player.Board);
                 Debug.Log($"{caster.CardName} recruited {recruitedCard.CardName}");
 
                 recruitCount++;
 
-                if(recruitCount >= _recruitCount)
+                if (recruitCount >= _recruitCount)
                 {
                     return;
                 }

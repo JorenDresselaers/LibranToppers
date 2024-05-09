@@ -15,11 +15,13 @@ public class Deck : NetworkBehaviour
     [SerializeField] private Hand _hand;
     [SerializeField] private bool _moveCardToHand = true;
 
+    public bool _isClickable = false;
+
     private void Awake()
     {
         _cardsData = _deckdata.cards.ToList();
         ShuffleCards();
-        UpdateText();
+        UpdateText(_deckdata.cards.Count);
     }
 
     public GameObject CreateCard()
@@ -36,8 +38,6 @@ public class Deck : NetworkBehaviour
 
                 NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.RemoveAt(0);
-
-                UpdateText();
 
                 return cardObject;
             }
@@ -65,13 +65,13 @@ public class Deck : NetworkBehaviour
                 card.GetComponent<Card>().BeginDrag();
             }
         }
-        RpcUpdateText();
+        RpcUpdateText(_deckdata.cards.Count);
     }
 
     [ClientRpc]
-    private void RpcUpdateText()
+    private void RpcUpdateText(int cardsLeft)
     {
-        UpdateText();
+        UpdateText(cardsLeft);
     }
 
     public GameObject CreateCard(CardData cardToCreate)
@@ -80,17 +80,16 @@ public class Deck : NetworkBehaviour
         {
             if(data == cardToCreate)
             {
-                GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
-                card.GetComponent<Card>().Initialize(data);
-                card.GetComponent<Card>()._player = _player;
-                _cardsData.RemoveAt(0);
+                GameObject cardObject = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
+                Card card = cardObject.GetComponent<Card>();
+                card.Initialize(data);
+                card._player = _player;
 
-                UpdateText();
-
+                if(isServer) NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.Remove(data);
                 ShuffleCards();
 
-                return card;
+                return cardObject;
             }
         }
         return null;
@@ -115,6 +114,7 @@ public class Deck : NetworkBehaviour
     private void OnMouseDown()
     {
         if (!isLocalPlayer) return;
+        if (!_isClickable) return;
 
         CmdCreateCard();
 
@@ -135,9 +135,9 @@ public class Deck : NetworkBehaviour
         //}
     }
 
-    private void UpdateText()
+    private void UpdateText(int cardsRemaining)
     {
         if (!_cardsRemainingText) return;
-        _cardsRemainingText.text = _cardsData.Count.ToString();
+        _cardsRemainingText.text = cardsRemaining.ToString();
     }
 }

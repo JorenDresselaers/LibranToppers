@@ -13,6 +13,7 @@ public class Board : NetworkBehaviour
 
     private List<Card> _cards = new List<Card>(); // List to hold current cards on the board
     public List<Card> Cards => _cards;
+    public bool IsFull => _cards.Count >= _maxCards;
 
     private void Awake()
     {
@@ -26,7 +27,7 @@ public class Board : NetworkBehaviour
 
     public bool AddCard(Card card)
     {
-        if (_cards.Count >= _maxCards)
+        if (IsFull)
         {
             Debug.Log("Board is full");
             return false;
@@ -35,12 +36,21 @@ public class Board : NetworkBehaviour
         card.transform.SetParent(transform);
         card.transform.localRotation = Quaternion.identity;
         card.transform.localScale = Vector3.one;
+        if (isServer) RpcReparentCard(card);
         PlaceCard(card);
         _cards.Add(card);
         if(_hand) _hand.RemoveCard(card);
 
         UpdateCardPositions();
         return true;
+    }
+
+    [ClientRpc]
+    private void RpcReparentCard(Card card)
+    {
+        card.transform.SetParent(transform);
+        card.transform.localRotation = Quaternion.identity;
+        card.transform.localScale = Vector3.one;
     }
 
     private void PlaceCard(Card card)

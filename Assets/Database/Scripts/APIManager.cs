@@ -8,10 +8,17 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static CardData;
 
 public class APIManager : MonoBehaviour
 {
+    private static APIManager _instance;
+    public static APIManager Instance => _instance;
+
     private const string SignInURL = "https://libra-toppers-server.azurewebsites.net/signin";
+
+    [SerializeField] private GameObject _loginObject;
+    [SerializeField] private TextMeshProUGUI _statusText;
 
     private string _email = "";
     private string _password = "";
@@ -49,7 +56,7 @@ public class APIManager : MonoBehaviour
         public string id;
         public string name;
         public string type;
-        public List<string> factions;
+        public string[] factions;
         public string alignment;
         public int red;
         public int blue;
@@ -60,6 +67,21 @@ public class APIManager : MonoBehaviour
         public int __v;
         public string img;
         public int amount;
+
+        public Faction[] GetFactions()
+        {
+            Faction[] parsedFactions = new Faction[factions.Length];
+            for (int i = 0; i < factions.Length; i++)
+            {
+                parsedFactions[i] = (Faction)Enum.Parse(typeof(Faction), factions[i].Replace(" ", ""), true);
+            }
+            return parsedFactions;
+        }
+
+        public Alignment GetAlignment()
+        {
+            return (Alignment)Enum.Parse(typeof(Alignment), alignment.Replace(" ", ""), true);
+        }
     }
 
     [Serializable]
@@ -67,6 +89,11 @@ public class APIManager : MonoBehaviour
     {
         public float version;
         public List<Card> cards;
+    }
+
+    private void Awake()
+    {
+        _instance = this;
     }
 
     public void SetPassword(string password)
@@ -93,11 +120,16 @@ public class APIManager : MonoBehaviour
             _user.token = jsonResponse["token"].ToString();
 
             print("Succesfully logged in!");
+            _statusText.text = "Logged in!";
+            _loginObject.SetActive(false);
+            return;
         }
         catch (Exception ex)
         {
             Debug.LogError("Failed to log in: " + ex);
         }
+
+        _statusText.text = "Failed to log in.";
     }
 
     public async Task<string> SignIn(string email, string password)
@@ -131,5 +163,10 @@ public class APIManager : MonoBehaviour
                 return null;
             }
         }
+    }
+
+    public void ToggleUI(bool toggle)
+    {
+        _loginObject.SetActive(toggle);
     }
 }

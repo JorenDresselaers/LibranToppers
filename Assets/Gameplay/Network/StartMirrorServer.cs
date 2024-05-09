@@ -4,7 +4,8 @@ using Mirror;
 
 public class StartMirrorServer : MonoBehaviour
 {
-    public InputField ipAddressInput; // Input field for entering server IP address
+    public InputField _ipAddressInput; // Input field for entering server IP address
+    [SerializeField] private string _sceneName;
 
     public void StartServer()
     {
@@ -12,6 +13,7 @@ public class StartMirrorServer : MonoBehaviour
         if (!NetworkServer.active)
         {
             NetworkManager.singleton.StartHost();
+            APIManager.Instance?.ToggleUI(false);
         }
     }
 
@@ -19,8 +21,9 @@ public class StartMirrorServer : MonoBehaviour
     {
         // Join the server as a client
         string networkAddress = "127.0.0.1";
-        if (ipAddressInput != null && ipAddressInput.text != "") networkAddress = ipAddressInput.text; 
+        if (_ipAddressInput != null && _ipAddressInput.text != "") networkAddress = _ipAddressInput.text; 
         NetworkManager.singleton.networkAddress = networkAddress;
         NetworkManager.singleton.StartClient();
+        APIManager.Instance?.ToggleUI(false);
     }
 }
