@@ -13,8 +13,61 @@ public class APIManager : MonoBehaviour
 {
     private const string SignInURL = "https://libra-toppers-server.azurewebsites.net/signin";
 
-    string _email = "";
-    string _password = "";
+    private string _email = "";
+    private string _password = "";
+    private User _user;
+    private Collection _collection;
+
+    [Serializable]
+    public class User
+    {
+        public string _id;
+        public string id;
+        public string username;
+        public string email;
+        public string password;
+        public List<BoosterPack> boosterPacks;
+        public List<object> starterPacks; // You might want to replace `object` with a specific type if you know the type of starter packs.
+        public bool isAdmin;
+        public int __v;
+
+        [Serializable]
+        public class BoosterPack
+        {
+            public string id;
+            public string name;
+            public int amount;
+            public string _id;
+        }
+
+        public string token;
+    }
+    [Serializable]
+    public class Card
+    {
+        public string _id;
+        public string id;
+        public string name;
+        public string type;
+        public List<string> factions;
+        public string alignment;
+        public int red;
+        public int blue;
+        public string quote;
+        public List<object> abilities; // You might want to replace `object` with a specific type if you know the type of abilities.
+        public int version;
+        public bool isTemp;
+        public int __v;
+        public string img;
+        public int amount;
+    }
+
+    [Serializable]
+    public class Collection
+    {
+        public float version;
+        public List<Card> cards;
+    }
 
     public void SetPassword(string password)
     {
@@ -31,14 +84,13 @@ public class APIManager : MonoBehaviour
         print("Logging in");
         try
         {
-
             string response = await SignIn(_email, _password);
 
             // Parse the response string to a JObject
             JObject jsonResponse = JObject.Parse(response);
-
-            // Convert the JObject to a formatted JSON string
-            string jsonFormatted = jsonResponse.ToString();
+            _user = JsonUtility.FromJson<User>(jsonResponse["user"].ToString());
+            _collection = JsonUtility.FromJson<Collection>(jsonResponse["user"]["cardCollection"].ToString());
+            _user.token = jsonResponse["token"].ToString();
 
             print("Succesfully logged in!");
         }
