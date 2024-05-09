@@ -29,16 +29,17 @@ public class Deck : NetworkBehaviour
             CardData data = _cardsData[0];
             if (data != null)
             {
-                GameObject card = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
-                card.GetComponent<Card>().Initialize(data);
-                card.GetComponent<Card>()._player = _player;
+                GameObject cardObject = Instantiate(_cardPrefab, transform.position, Quaternion.identity);
+                Card card = cardObject.GetComponent<Card>();
+                card.Initialize(data);
+                card._player = _player;
 
-                NetworkServer.Spawn(card, _player.gameObject);
+                NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.RemoveAt(0);
 
                 UpdateText();
 
-                return card;
+                return cardObject;
             }
             _cardsData.RemoveAt(0);
         }
@@ -53,6 +54,7 @@ public class Deck : NetworkBehaviour
         {
             if (_moveCardToHand)
             {
+                card.GetComponent<Card>().SetFlipped(true);
                 if (!_hand.AddCard(card.GetComponent<Card>()))
                 {
                     Destroy(card);

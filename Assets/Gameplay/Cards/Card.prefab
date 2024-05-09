@@ -163,6 +163,7 @@ MonoBehaviour:
   syncInterval: 0
   _debugData: {fileID: 0}
   _meshRenderer: {fileID: 645534311935536142}
+  _canvas: {fileID: 6360134305571724605}
   _nameText: {fileID: 8595958137675730025}
   _vitalityText: {fileID: 3546609962884229258}
   _damageText: {fileID: 4982449988358769177}
@@ -173,6 +174,7 @@ MonoBehaviour:
   _player: {fileID: 0}
   _defaultCardMaterial: {fileID: 2100000, guid: f1cf65b1649293c41a070818c58bd5ae, type: 2}
   _goldenCardMaterial: {fileID: 2100000, guid: 4c78f2ebfa01e2946b69577ff5b1e81e, type: 2}
+  _flippedMaterial: {fileID: 2100000, guid: fbce1f87941c4e24ca9c7576877cdc29, type: 2}
   _isDraggable: 0
 --- !u!54 &5097252319232498224
 Rigidbody:

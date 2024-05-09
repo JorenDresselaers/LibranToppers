@@ -15,6 +15,7 @@ public class Card : NetworkBehaviour
 
     [Header("Prefab Objects")]
     [SerializeField] private MeshRenderer _meshRenderer;
+    [SerializeField] private Canvas _canvas;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _vitalityText;
     [SerializeField] private TextMeshProUGUI _damageText;
@@ -32,6 +33,7 @@ public class Card : NetworkBehaviour
     [Header("Materials")]
     [SerializeField] private Material _defaultCardMaterial;
     [SerializeField] private Material _goldenCardMaterial;
+    [SerializeField] private Material _flippedMaterial;
 
     //Data
     [SyncVar] private string _cardName;
@@ -45,6 +47,9 @@ public class Card : NetworkBehaviour
     [SyncVar] private CardData.Rarity _rarity;
     [SyncVar] private bool _isGolden;
 
+    [SyncVar(hook = nameof(OnFlipStatusChanged))]
+    private bool _isFlipped;
+
     public string CardName => _cardName;
     public int Damage => _damage;
     public int Vitality => _vitality;
@@ -57,13 +62,19 @@ public class Card : NetworkBehaviour
     [SyncVar] private Vector3 _startPosition;
     [SerializeField, SyncVar] private bool _isDraggable = false;
 
-
     private bool CanInteract => _player.gameObject == NetworkClient.localPlayer.gameObject;
 
     public override void OnStartClient()
     {
         Initialize(_data);
+        if(_board != null) Flip();
     }
+
+    private void OnFlipStatusChanged(bool oldValue, bool newValue)
+    {
+        Flip();
+    }
+
 
     private void Awake()
     {
@@ -98,6 +109,47 @@ public class Card : NetworkBehaviour
         UpdateText();
 
         _isDraggable = isDraggable;
+    }
+
+    public void SetFlipped(bool flipped)
+    {
+        if (isServer)
+        {
+            _isFlipped = flipped;
+            RpcFlip();
+        }
+        else
+        {
+            CmdFlip(flipped);
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdFlip(bool flipped)
+    {
+        _isFlipped = flipped;
+        RpcFlip();
+    }
+
+    [ClientRpc]
+    private void RpcFlip()
+    {
+        Flip();
+    }
+
+    // Method to flip the card
+    private void Flip()
+    {
+        if (_player?.gameObject == NetworkClient.localPlayer?.gameObject)
+        {
+            _canvas.enabled = true;
+            _meshRenderer.material = _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
+        }
+        else
+        {
+            _canvas.enabled = !_isFlipped;
+            _meshRenderer.material = _isFlipped ? _flippedMaterial : _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
+        }
     }
 
     private void RemoveNullAbilities()
@@ -292,6 +344,8 @@ public class Card : NetworkBehaviour
     {
         if (board.AddCard(this))
         {
+            _isFlipped = false;
+            Flip();
             _isDraggable = false;
             _board = board;
             OnPlayed();
