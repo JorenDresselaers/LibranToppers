@@ -21,7 +21,7 @@ public class Deck : NetworkBehaviour
     {
         _cardsData = _deckdata.cards.ToList();
         ShuffleCards();
-        UpdateText(_deckdata.cards.Count);
+        UpdateText(_cardsData.Count);
     }
 
     public GameObject CreateCard()
@@ -65,7 +65,7 @@ public class Deck : NetworkBehaviour
                 card.GetComponent<Card>().BeginDrag();
             }
         }
-        RpcUpdateText(_deckdata.cards.Count);
+        RpcUpdateText(_cardsData.Count);
     }
 
     [ClientRpc]
