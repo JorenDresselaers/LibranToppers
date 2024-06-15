@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
+using static APIManager;
 
 public class Board : NetworkBehaviour
 {
@@ -53,6 +54,22 @@ public class Board : NetworkBehaviour
         card.transform.localScale = Vector3.one;
     }
 
+    //This should have an intermediary step that checks for client or server, and calls the appropriate function
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveCard(Card card)
+    {
+        _cards.Remove(card);
+        RpcRemoveCard(card);
+        Destroy(card.gameObject);
+        RpcUpdateCardPositions();
+    }
+
+    [ClientRpc]
+    private void RpcRemoveCard(Card card)
+    {
+        _cards.Remove(card);
+    }
+
     private void PlaceCard(Card card)
     {
         float boardWidth = _collider.size.x;
@@ -61,6 +78,12 @@ public class Board : NetworkBehaviour
 
         float xPosition = startX + (_cards.Count * (cardWidth));
         card.transform.localPosition = new Vector3(xPosition, _startPosition.y, _startPosition.z);
+    }
+
+    [ClientRpc]
+    public void RpcUpdateCardPositions() 
+    {
+        UpdateCardPositions();
     }
 
     private void UpdateCardPositions()

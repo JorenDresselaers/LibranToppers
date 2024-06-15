@@ -12,6 +12,8 @@ public class Hand : NetworkBehaviour
     private List<Card> _cards = new(); // List to store cards in hand
     public List<Card> Cards => _cards;
 
+    public bool IsFull => _cards.Count >= _maxCards;
+
     private void Awake()
     {
         if (!_collider)

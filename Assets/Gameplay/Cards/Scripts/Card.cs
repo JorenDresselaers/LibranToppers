@@ -65,6 +65,8 @@ public class Card : NetworkBehaviour
 
     [SyncVar] private int _interactionsPerTurn = 1;
     [SyncVar] private int _interactionsLeft = 0;
+    private bool _isTargetingAbility = false;
+    private CardAbility.Trigger _currentAbilityTrigger;
 
     private bool CanInteract => _interactionsLeft > 0;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
@@ -225,10 +227,39 @@ public class Card : NetworkBehaviour
                 _lineRenderer.SetPosition(0, new Vector3(_startPosition.x, _startPosition.y, _startPosition.z + lineRendererZOffset));
                 _lineRenderer.SetPosition(1, new Vector3(mousePos.x, mousePos.y, mousePos.z + lineRendererZOffset));
             }
+
+            if(_isTargetingAbility && Input.GetMouseButtonDown(0))
+            {
+                _isDragging = false;
+                _lineRenderer.enabled = false;
+                _isTargetingAbility = false;
+                EndDrag();
+            }
         }
     }
 
     private void OnMouseDown()
+    {
+        if (_board == null)
+        {
+            BeginInteractDrag();
+        }
+        else
+        {
+
+            foreach (CardAbility ability in _abilities)
+            {
+                if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
+                {
+                    _currentAbilityTrigger = CardAbility.Trigger.ASSAULT;
+                    BeginInteractDrag();
+                    return;
+                }
+            }
+        }
+    }
+
+    public void BeginInteractDrag()
     {
         if (!IsOwnedByClient || !_isClickable) return;
 
@@ -236,7 +267,10 @@ public class Card : NetworkBehaviour
         {
             _startPosition = transform.position;
             _isDragging = true;
-            if (!_isDraggable) _lineRenderer.enabled = true;
+            if (!_isDraggable)
+            {
+                _lineRenderer.enabled = true;
+            }
         }
     }
 
@@ -254,7 +288,7 @@ public class Card : NetworkBehaviour
 
     private void OnDragComplete(Card other)
     {
-        if (!other) return;
+        if (!other || other.Board == null) return;
 
         Debug.Log("Drag Complete with " + other.name);
         if(other)
@@ -268,7 +302,7 @@ public class Card : NetworkBehaviour
     {
         foreach (CardAbility ability in _abilities)
         {
-            if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
+            if (ability._abilityTrigger == _currentAbilityTrigger)
             {
                 ability.Activate(this, card);
             }
@@ -292,7 +326,14 @@ public class Card : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CmdUpdateCard()
     {
-        RpcUpdateCard();
+        if (_vitality <= 0)
+        {
+            OnDeath();
+        }
+        else
+        {
+            RpcUpdateCard();
+        }
     }
 
     /// <summary>
@@ -410,16 +451,25 @@ public class Card : NetworkBehaviour
     #endregion
     #region Ability Triggers
 
-    private void TriggerAbility(CardAbility.Trigger trigger)
+    private void TriggerAbility(CardAbility.Trigger trigger, bool updateCard = true)
     {
         foreach (CardAbility ability in _abilities)
         {
             if (ability != null && ability._abilityTrigger == trigger)
             {
-                ability.Activate(this);
+                if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player))
+                {
+                    _isTargetingAbility = true;
+                    _currentAbilityTrigger = trigger;
+                    BeginInteractDrag();
+                }
+                else
+                {
+                    ability.Activate(this);
+                }
             }
         }
-        CmdUpdateCard();
+        if(updateCard) CmdUpdateCard();
     }
 
     private void OnPlayed()
@@ -430,11 +480,15 @@ public class Card : NetworkBehaviour
     public void OnEnterBoard()
     {
         TriggerAbility(CardAbility.Trigger.ENTEREDBOARD);
+        TriggerAbility(CardAbility.Trigger.AURAENTER);
     }
 
     private void OnDeath()
     {
-        TriggerAbility(CardAbility.Trigger.DEATH);
+        TriggerAbility(CardAbility.Trigger.DEATH, false);
+        TriggerAbility(CardAbility.Trigger.AURALEAVE, false);
+        _player.Graveyard.CmdAddCard(_data);
+        _board.CmdRemoveCard(this);
     }
 
     private void OnDrawn()

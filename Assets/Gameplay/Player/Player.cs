@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+    [Header("Scene Objects")]
     [SerializeField] private Deck _deck;
     public Deck Deck => _deck;
     
@@ -13,18 +14,28 @@ public class Player : NetworkBehaviour
     
     [SerializeField] private Board _board;
     public Board Board => _board;
+    
+    [SerializeField] private Graveyard _graveYard;
+    public Graveyard Graveyard => _graveYard;
 
     [SerializeField] private Player _opponent;
     public Player Opponent => _opponent;
 
     public EndTurnOnClick _endTurnButton;
 
+    [Header("Settings")]
+    [SerializeField] private bool _drawCardsAutomatically = true;
+    [SerializeField] private int _cardsDrawnPerTurn = 5;
+
     private void Awake()
     {
         Deck._player = this;
         Hand._player = this;
         Board._player = this;
+        Graveyard._player = this;
         if(_opponent && _opponent._opponent != this) _opponent._opponent = this;
+
+        Deck.ClickToDrawCards = !_drawCardsAutomatically;
     }
 
     public override void OnStartServer()
@@ -47,6 +58,18 @@ public class Player : NetworkBehaviour
         }
 
         ToggleClickableObjects(true);
+
+        if(_drawCardsAutomatically)
+        {
+            for (int i = 0; i < _cardsDrawnPerTurn; i++)
+            {
+                if (!Hand.IsFull)
+                {
+                    Deck.CmdCreateCard();
+                }
+                else break;
+            }
+        }
     }
 
     [ClientRpc]

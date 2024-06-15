@@ -17,9 +17,13 @@ public class CardAbility : ScriptableObject
         STARTOFTURN,
         ENDOFTURN,
         OTHERCARDDEFENDS,
-        ENTEREDBOARD
+        ENTEREDBOARD,
+        AURAENTER,
+        AURALEAVE
     }
     public Trigger _abilityTrigger;
+    [SerializeField] protected bool _isTargeted = false;
+    public bool IsTargeted => _isTargeted;
 
     //Add a struct that detects targets and whether or not they're valid
     public struct AbilityTarget
@@ -35,6 +39,20 @@ public class CardAbility : ScriptableObject
 
     protected virtual bool CanTargetCard(Card caster, Card target)
     { return true; }
+
+    public bool BoardsContainsValidTarget(Card caster, Player player)
+    {
+        if (player == null) return false;
+        List<Card> cardsOnBoards = new();
+        cardsOnBoards.AddRange(player.Board.Cards);
+        if(player.Opponent != null) cardsOnBoards.AddRange(player.Opponent.Board.Cards);
+
+        foreach(Card card in cardsOnBoards)
+        {
+            if (CanTargetCard(caster, card)) return true;
+        }
+        return false;
+    }
 }
 
 public static class AbilityDataSerializer

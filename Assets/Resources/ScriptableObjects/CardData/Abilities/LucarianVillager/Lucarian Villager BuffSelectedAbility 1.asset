@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: defe0a4df3e68e5419cbd5c81713a978, type: 3}
+  m_Name: Lucarian Villager BuffSelectedAbility 1
+  m_EditorClassIdentifier: 
+  _abilityTrigger: 1
+  _isTargeted: 1
+  _vitality: 1
+  _assault: 0
+  _targetFaction: 2

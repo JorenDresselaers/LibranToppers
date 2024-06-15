@@ -6,7 +6,6 @@ using UnityEngine;
 [Serializable, CreateAssetMenu(menuName = "Abilities/Assault", fileName = "AssaultAbility")]
 public class AssaultAbility : CardAbility
 {
-
     private void Awake()
     {
         _abilityTrigger = Trigger.ASSAULT;

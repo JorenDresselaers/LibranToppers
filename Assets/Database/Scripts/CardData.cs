@@ -12,6 +12,7 @@ public class CardData : ScriptableObject
     { 
         None,
         DusksOfDawn,
+        Mortal
     }
     
     [Serializable]
@@ -44,7 +45,7 @@ public class CardData : ScriptableObject
     public Rarity rarity;
     public bool isGolden;
 
-    public List<CardAbility> abilities = new();
+    [HideInInspector] public List<CardAbility> abilities = new();
 }
 
 public static class CardDataSerializer

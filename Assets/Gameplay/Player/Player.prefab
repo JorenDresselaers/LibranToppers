@@ -212,6 +212,7 @@ Transform:
   - {fileID: 3536965801163430359}
   - {fileID: 6721787897644426992}
   - {fileID: 3803932439756346055}
+  - {fileID: 5368998750052043140}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7680177061517995231
@@ -232,7 +233,11 @@ MonoBehaviour:
   _deck: {fileID: 730972814755214508}
   _hand: {fileID: 7910631997607355532}
   _board: {fileID: 6329063802870947717}
+  _graveYard: {fileID: 2543113794919616988}
   _opponent: {fileID: 0}
+  _endTurnButton: {fileID: 0}
+  _drawCardsAutomatically: 1
+  _cardsDrawnPerTurn: 5
 --- !u!114 &-1641985432616384021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,6 +602,54 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &6437413113992309623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5368998750052043140}
+  - component: {fileID: 2543113794919616988}
+  m_Layer: 0
+  m_Name: Graveyard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5368998750052043140
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6437413113992309623}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3816473537957061748}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2543113794919616988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6437413113992309623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0675b5f0ceb385f4298520be84acf884, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _player: {fileID: 7680177061517995231}
 --- !u!1 &7578719196737627555
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,3 +883,4 @@ MonoBehaviour:
   _deckdata: {fileID: 11400000, guid: d0339ac775bc98c49818e1bbfa76741d, type: 2}
   _hand: {fileID: 7910631997607355532}
   _moveCardToHand: 1
+  _isClickable: 0

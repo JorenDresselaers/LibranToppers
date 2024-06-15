@@ -16,6 +16,7 @@ public class Deck : NetworkBehaviour
     [SerializeField] private bool _moveCardToHand = true;
 
     public bool _isClickable = false;
+    public bool ClickToDrawCards { get; set; } = true;
 
     private void Awake()
     {
@@ -46,8 +47,8 @@ public class Deck : NetworkBehaviour
         return null;
     }
 
-    [Command]
-    private void CmdCreateCard()
+    [Command(requiresAuthority = false)]
+    public void CmdCreateCard()
     {
         GameObject card = CreateCard();
         if (card != null)
@@ -115,24 +116,10 @@ public class Deck : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
         if (!_isClickable) return;
-
-        CmdCreateCard();
-
-        //GameObject card = CreateCard();
-        //if (card != null)
-        //{
-        //    if(_moveCardToHand)
-        //    {
-        //        if(!_hand.AddCard(card.GetComponent<Card>()))
-        //        {
-        //            Destroy(card);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        card.GetComponent<Card>().BeginDrag();
-        //    }
-        //}
+        if (ClickToDrawCards)
+        {
+            CmdCreateCard();
+        }
     }
 
     private void UpdateText(int cardsRemaining)
