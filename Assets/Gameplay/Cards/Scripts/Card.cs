@@ -88,6 +88,10 @@ public class Card : NetworkBehaviour
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _lineRenderer.positionCount = 2;
         _lineRenderer.enabled = false;
+
+        _defaultCardMaterial = Instantiate(_defaultCardMaterial);
+        _flippedMaterial = Instantiate(_flippedMaterial);
+        _goldenCardMaterial = Instantiate(_goldenCardMaterial);
     }
 
     public void Initialize(CardData data, bool isDraggable = true)
@@ -184,7 +188,17 @@ public class Card : NetworkBehaviour
         if (_image) _image.sprite = _sprite;
         if (_factionText) _factionText.text = _faction == CardData.Faction.None ? "" : _faction.ToString();
         if (_alignmentText) _alignmentText.text = _alignment == CardData.Alignment.None ? "" : _alignment.ToString();
-        if (_meshRenderer) _meshRenderer.material = _isGolden ? Instantiate(_goldenCardMaterial) : Instantiate(_defaultCardMaterial);
+        if (_meshRenderer)
+        {
+            if (_player?.gameObject == NetworkClient.localPlayer?.gameObject)
+            {
+                _meshRenderer.material = _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
+            }
+            else
+            {
+                _meshRenderer.material = _isFlipped ? _flippedMaterial : _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
+            }
+        }
     }
 
     private IEnumerator UpdateTextCoroutine(float waitTime)

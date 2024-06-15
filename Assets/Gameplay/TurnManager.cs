@@ -58,6 +58,15 @@ public class TurnManager : NetworkBehaviour
         // Get the current player
         Player currentPlayer = _players[_currentPlayerIndex];
         currentPlayer.ServerStartTurn();
+
+        foreach(Player player in _players)
+        {
+            if(player != currentPlayer)
+            {
+                player.ServerEndTurn();
+            }
+        }
+
         //RpcStartTurn(currentPlayer);
 
         RpcColourButton(currentPlayer);
