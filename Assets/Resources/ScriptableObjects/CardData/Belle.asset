@@ -17,7 +17,7 @@ MonoBehaviour:
   damage: 1
   description: 'When played, <b>Belle Hosoda</b> immediately restores 2 Vitality
     to a target of choice, or 4 Vitality if she targets a <b>Dusks of Dawn</b> card. '
-  image: {fileID: 21300000, guid: 36fdb73da69de744bbfc0b083d095ca7, type: 3}
+  image: {fileID: 21300000, guid: d3eb2e938ad8f18419d7669bc48b9732, type: 3}
   faction: 1
   alignment: 2
   rarity: 0

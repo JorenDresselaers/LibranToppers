@@ -15,18 +15,7 @@ MonoBehaviour:
   deckName: TestDeck
   cards:
   - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
-  - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
-  - {fileID: 11400000, guid: 8c45a6b5ee558f345a5254acf1b6fac4, type: 2}
   - {fileID: 11400000, guid: 8c45a6b5ee558f345a5254acf1b6fac4, type: 2}
   - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
-  - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
-  - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
-  - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
-  - {fileID: 11400000, guid: 8c45a6b5ee558f345a5254acf1b6fac4, type: 2}
-  - {fileID: 11400000, guid: 8c45a6b5ee558f345a5254acf1b6fac4, type: 2}
-  - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
-  - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
   - {fileID: 11400000, guid: 9220ae0b1331ea0448957561003e5f7f, type: 2}
-  - {fileID: 11400000, guid: 9220ae0b1331ea0448957561003e5f7f, type: 2}
-  - {fileID: 11400000, guid: 9220ae0b1331ea0448957561003e5f7f, type: 2}
-  - {fileID: 11400000, guid: 9220ae0b1331ea0448957561003e5f7f, type: 2}
+  - {fileID: 11400000, guid: fe79a4904b2130d41a627dbedf2899c6, type: 2}

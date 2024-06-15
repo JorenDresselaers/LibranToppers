@@ -18,8 +18,7 @@ public class CardAbility : ScriptableObject
         ENDOFTURN,
         OTHERCARDDEFENDS,
         ENTEREDBOARD,
-        AURAENTER,
-        AURALEAVE
+        AURA,
     }
     public Trigger _abilityTrigger;
     [SerializeField] protected bool _isTargeted = false;

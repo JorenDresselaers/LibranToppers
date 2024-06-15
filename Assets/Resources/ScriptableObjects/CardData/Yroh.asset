@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b23fc09c485ec541b287b1506808176, type: 3}
+  m_Name: Yroh
+  m_EditorClassIdentifier: 
+  cardName: Yroh
+  vitality: 3
+  damage: 1
+  description: "Yronic, isn\u2019t it?"
+  image: {fileID: 21300000, guid: 869d74ff7aa78614795c8d67eff4f49c, type: 3}
+  faction: 1
+  alignment: 2
+  rarity: 1
+  isGolden: 0
+  abilities:
+  - {fileID: 11400000, guid: 7f1c6c1fbd2a7f747be30c7e6e6da923, type: 2}

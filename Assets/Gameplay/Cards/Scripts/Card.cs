@@ -47,6 +47,8 @@ public class Card : NetworkBehaviour
     [SyncVar] private CardData.Alignment _alignment;
     [SyncVar] private CardData.Rarity _rarity;
     [SyncVar] private bool _isGolden;
+    public List<string> _tags;
+
 
     [SyncVar(hook = nameof(OnFlipStatusChanged))]
     private bool _isFlipped;
@@ -66,7 +68,7 @@ public class Card : NetworkBehaviour
     [SyncVar] private int _interactionsPerTurn = 1;
     [SyncVar] private int _interactionsLeft = 0;
     private bool _isTargetingAbility = false;
-    private CardAbility.Trigger _currentAbilityTrigger;
+    [SyncVar] private CardAbility.Trigger _currentAbilityTrigger;
 
     private bool CanInteract => _interactionsLeft > 0;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
@@ -246,12 +248,12 @@ public class Card : NetworkBehaviour
         }
         else
         {
-
             foreach (CardAbility ability in _abilities)
             {
                 if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
                 {
-                    _currentAbilityTrigger = CardAbility.Trigger.ASSAULT;
+                    CmdSetCurrentTrigger(CardAbility.Trigger.ASSAULT);
+                    print("Assaulting");
                     BeginInteractDrag();
                     return;
                 }
@@ -298,6 +300,12 @@ public class Card : NetworkBehaviour
     }
 
     [Command]
+    private void CmdSetCurrentTrigger(CardAbility.Trigger trigger)
+    {
+        _currentAbilityTrigger = trigger;
+    }
+
+    [Command]
     private void CmdInteract(Card card)
     {
         foreach (CardAbility ability in _abilities)
@@ -312,13 +320,7 @@ public class Card : NetworkBehaviour
 
     private void Interact(Card card)
     {
-        foreach (CardAbility ability in _abilities)
-        {
-            if (ability._abilityTrigger == CardAbility.Trigger.ASSAULT)
-            {
-                ability.Activate(this, card);
-            }
-        }
+        OnAssault();
         card.CmdUpdateCard();
         _interactionsLeft--;
     }
@@ -415,6 +417,7 @@ public class Card : NetworkBehaviour
             _isDraggable = false;
             _board = board;
             OnPlayed();
+            OnEnterBoard();
             return;
         }
     }
@@ -460,7 +463,7 @@ public class Card : NetworkBehaviour
                 if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player))
                 {
                     _isTargetingAbility = true;
-                    _currentAbilityTrigger = trigger;
+                    CmdSetCurrentTrigger(trigger);
                     BeginInteractDrag();
                 }
                 else
@@ -480,13 +483,11 @@ public class Card : NetworkBehaviour
     public void OnEnterBoard()
     {
         TriggerAbility(CardAbility.Trigger.ENTEREDBOARD);
-        TriggerAbility(CardAbility.Trigger.AURAENTER);
     }
 
     private void OnDeath()
     {
         TriggerAbility(CardAbility.Trigger.DEATH, false);
-        TriggerAbility(CardAbility.Trigger.AURALEAVE, false);
         _player.Graveyard.CmdAddCard(_data);
         _board.CmdRemoveCard(this);
     }
@@ -520,6 +521,30 @@ public class Card : NetworkBehaviour
     public void OnEndOfTurn()
     {
         TriggerAbility(CardAbility.Trigger.ENDOFTURN);
+    }
+
+    public void OnAuraCheck()
+    {
+        TriggerAbility(CardAbility.Trigger.AURA);
+    }
+
+    #endregion
+
+    #region Tags
+
+    public void AddTag(string tag)
+    {
+        _tags.Add(tag);
+    }
+
+    public void RemoveTag(string tag)
+    {
+        _tags.Remove(tag);
+    }
+
+    public bool HasTag(string tag)
+    {
+        return _tags.Contains(tag);
     }
 
     #endregion

@@ -42,6 +42,14 @@ public class Board : NetworkBehaviour
         _cards.Add(card);
         if(_hand) _hand.RemoveCard(card);
 
+        List<Card> cardsOnAllBoards = new();
+        cardsOnAllBoards.AddRange(_cards);
+        if (_player.Opponent != null) cardsOnAllBoards.AddRange(_player.Opponent.Board.Cards);
+        foreach (Card boardCard in cardsOnAllBoards)
+        {
+            boardCard.OnAuraCheck();
+        }
+
         UpdateCardPositions();
         return true;
     }
@@ -61,6 +69,15 @@ public class Board : NetworkBehaviour
         _cards.Remove(card);
         RpcRemoveCard(card);
         Destroy(card.gameObject);
+
+        List<Card> cardsOnAllBoards = new();
+        cardsOnAllBoards.AddRange(_cards);
+        if (_player.Opponent != null) cardsOnAllBoards.AddRange(_player.Opponent.Board.Cards);
+        foreach (Card boardCard in cardsOnAllBoards) 
+        {
+            boardCard.OnAuraCheck();
+        }
+
         RpcUpdateCardPositions();
     }
 

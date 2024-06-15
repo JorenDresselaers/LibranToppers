@@ -16,7 +16,7 @@ MonoBehaviour:
   vitality: 1
   damage: 1
   description: "The heart of our civilization. Our biggest fans.\r"
-  image: {fileID: 21300000, guid: 9e7771f048fdf40839b6ee9dbacad67c, type: 3}
+  image: {fileID: 21300000, guid: cb56792725f4adf4d84e5a89476ae2eb, type: 3}
   faction: 2
   alignment: 2
   rarity: 0

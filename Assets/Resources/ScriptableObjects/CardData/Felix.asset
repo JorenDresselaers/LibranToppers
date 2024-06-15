@@ -18,7 +18,7 @@ MonoBehaviour:
   description: 'When played, <b>Felix</b> summons <b>Crabbicus</b> and <b>Yroh</b>
     to the field if they are in your deck. Him and his two summons then immediately
     attack the enemy ahead of <b>Felix</b>. '
-  image: {fileID: 21300000, guid: 093c2c6d4bcab59429953f8f0b3503d3, type: 3}
+  image: {fileID: 21300000, guid: 2dd0b99e95533e54ca82988573d82120, type: 3}
   faction: 1
   alignment: 2
   rarity: 0
