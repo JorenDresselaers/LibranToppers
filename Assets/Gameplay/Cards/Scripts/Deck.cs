@@ -36,6 +36,8 @@ public class Deck : NetworkBehaviour
                 Card card = cardObject.GetComponent<Card>();
                 card.Initialize(data);
                 card._player = _player;
+                card._isClickable = _isClickable;
+                print("Card created with clickable = " + _isClickable);
 
                 NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.RemoveAt(0);
@@ -49,6 +51,28 @@ public class Deck : NetworkBehaviour
 
     [Command(requiresAuthority = false)]
     public void CmdCreateCard()
+    {
+        GameObject card = CreateCard();
+        if (card != null)
+        {
+            if (_moveCardToHand)
+            {
+                card.GetComponent<Card>().SetFlipped(true);
+                if (!_hand.AddCard(card.GetComponent<Card>()))
+                {
+                    Destroy(card);
+                }
+            }
+            else
+            {
+                card.GetComponent<Card>().BeginDrag();
+            }
+        }
+        RpcUpdateText(_cardsData.Count);
+    }
+
+    [Server]
+    public void ServerCreateCard()
     {
         GameObject card = CreateCard();
         if (card != null)
@@ -85,6 +109,7 @@ public class Deck : NetworkBehaviour
                 Card card = cardObject.GetComponent<Card>();
                 card.Initialize(data);
                 card._player = _player;
+                card._isClickable = _isClickable;
 
                 if(isServer) NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.Remove(data);

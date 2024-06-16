@@ -55,6 +55,8 @@ public class RecruitAbility : CardAbility
     [Command]
     private void CmdActivate(Card caster)
     {
+        if (!caster._player.isServer) return;
+
         Deck deck = caster._player.Deck;
         Board board = caster.Board;
         int recruitCount = 0;

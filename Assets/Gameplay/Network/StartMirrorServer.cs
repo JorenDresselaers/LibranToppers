@@ -21,7 +21,7 @@ public class StartMirrorServer : MonoBehaviour
     {
         // Join the server as a client
         string networkAddress = "127.0.0.1";
-        if (_ipAddressInput != null && _ipAddressInput.text != "") networkAddress = _ipAddressInput.text; 
+        if (_ipAddressInput != null && _ipAddressInput.text != "") networkAddress = _ipAddressInput.text;
         NetworkManager.singleton.networkAddress = networkAddress;
         NetworkManager.singleton.StartClient();
         APIManager.Instance?.ToggleUI(false);

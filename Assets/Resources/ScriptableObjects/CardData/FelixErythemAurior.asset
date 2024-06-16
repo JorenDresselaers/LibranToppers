@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b23fc09c485ec541b287b1506808176, type: 3}
-  m_Name: Felix
+  m_Name: FelixErythemAurior
   m_EditorClassIdentifier: 
   cardName: Felix Erythem Aurior
   vitality: 3
@@ -21,7 +21,9 @@ MonoBehaviour:
   image: {fileID: 21300000, guid: 2dd0b99e95533e54ca82988573d82120, type: 3}
   faction: 1
   alignment: 2
-  rarity: 0
+  rarity: 2
   isGolden: 0
   abilities:
   - {fileID: 11400000, guid: fe2f20f3c32537743a77930de7adb8e8, type: 2}
+  - {fileID: 11400000, guid: e3d8151be078511439a89a1387b4c6be, type: 2}
+  - {fileID: 11400000, guid: bca06a3ffe07aee42bc9bdc0711f45e5, type: 2}

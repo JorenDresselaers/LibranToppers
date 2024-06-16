@@ -2,6 +2,7 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : NetworkBehaviour
 {
@@ -51,15 +52,15 @@ public class Player : NetworkBehaviour
         cardsToUpdate.AddRange(_hand.Cards);
         cardsToUpdate.AddRange(_board.Cards);
 
-        Debug.Log("Starting turn");
+        //Debug.Log($"Starting turn for player {name}");
         foreach (Card card in cardsToUpdate)
         {
             card.OnStartOfTurn();
         }
 
-        ToggleClickableObjects(true);
-
-        if(_drawCardsAutomatically)
+        //Done here beforehand to set cards clickable correctly
+        _deck._isClickable = true;
+        if (_drawCardsAutomatically)
         {
             for (int i = 0; i < _cardsDrawnPerTurn; i++)
             {
@@ -70,18 +71,21 @@ public class Player : NetworkBehaviour
                 else break;
             }
         }
+        ToggleClickableObjects(true);
     }
 
     [ClientRpc]
     private void ToggleClickableObjects(bool isClickable)
     {
         _deck._isClickable = isClickable;
-        List<Card> cardsToDisable = new List<Card>();
-        cardsToDisable.AddRange(_hand.Cards);
-        cardsToDisable.AddRange(_board.Cards);
+        print("Deck is clickable: " + isClickable);
+        List<Card> cardsToToggle = new List<Card>();
+        cardsToToggle.AddRange(_hand.Cards);
+        cardsToToggle.AddRange(_board.Cards);
 
-        foreach (Card card in cardsToDisable)
+        foreach (Card card in cardsToToggle)
         {
+            //print($"{card.CardName} clickable: {isClickable}");
             card._isClickable = isClickable;
         }
     }
@@ -93,7 +97,7 @@ public class Player : NetworkBehaviour
         cardsToUpdate.AddRange(_hand.Cards);
         cardsToUpdate.AddRange(_board.Cards);
 
-        Debug.Log("Ending turn");
+        //Debug.Log($"Ending turn for player {name}");
         foreach (Card card in cardsToUpdate)
         {
             card.OnEndOfTurn();

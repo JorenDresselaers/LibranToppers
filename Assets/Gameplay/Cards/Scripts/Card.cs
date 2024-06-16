@@ -315,6 +315,17 @@ public class Card : NetworkBehaviour
                 ability.Activate(this, card);
             }
         }
+
+        if (_currentAbilityTrigger == CardAbility.Trigger.ASSAULT)
+        {
+            foreach (CardAbility ability in card._abilities)
+            {
+                if (ability._abilityTrigger == CardAbility.Trigger.DEFEND)
+                {
+                    ability.Activate(card, this);
+                }
+            }
+        }
         RpcUpdateCard();
     }
 
