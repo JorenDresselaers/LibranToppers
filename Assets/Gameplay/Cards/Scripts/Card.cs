@@ -6,6 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
+using System;
 
 public class Card : NetworkBehaviour
 {
@@ -76,6 +78,8 @@ public class Card : NetworkBehaviour
     private bool _isTargetingAbility = false;
     [SyncVar] private CardAbility.Trigger _currentAbilityTrigger;
 
+    private List<LingeringEffect> _endOfTurnEffects = new();
+
     private bool CanInteract => _interactionsLeft > 0;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
     public bool _isClickable = false;
@@ -84,6 +88,11 @@ public class Card : NetworkBehaviour
     private Quaternion _originalRotation;
     [SerializeField] private float _inspectScale = 1.5f;
 
+    struct LingeringEffect
+    {
+        public Action effect;
+        public int turnsRemaining;
+    }
 
     public override void OnStartClient()
     {
@@ -425,7 +434,7 @@ public class Card : NetworkBehaviour
             if (Physics.Raycast(ray, out hit, 100f, LayerMask.GetMask("Board")))
             {
                 Board board = hit.collider.GetComponent<Board>();
-                if (board != null)
+                if (board != null && board == _player.Board)
                 {
                     CmdAddToBoard(board);
                 }
@@ -546,9 +555,9 @@ public class Card : NetworkBehaviour
 
     private void OnDeath()
     {
-        TriggerAbility(CardAbility.Trigger.DEATH, false);
         _player.Graveyard.CmdAddCard(_data);
         _board.CmdRemoveCard(this);
+        TriggerAbility(CardAbility.Trigger.DEATH, false);
     }
 
     private void OnDrawn()
@@ -580,6 +589,23 @@ public class Card : NetworkBehaviour
     public void OnEndOfTurn()
     {
         TriggerAbility(CardAbility.Trigger.ENDOFTURN);
+
+        List<int> markedForRemoval = new();
+        for(int currentEffect = 0; currentEffect < _endOfTurnEffects.Count; currentEffect++)
+        {
+            LingeringEffect effect = _endOfTurnEffects[currentEffect];
+            effect.effect.Invoke();
+            effect.turnsRemaining--;
+            if (effect.turnsRemaining <= 0)
+            {
+                markedForRemoval.Add(currentEffect);
+            }
+        }
+
+        foreach(int toRemove in markedForRemoval)
+        {
+            _endOfTurnEffects.RemoveAt(toRemove);
+        }
     }
 
     public void OnAuraCheck()
@@ -592,13 +618,22 @@ public class Card : NetworkBehaviour
         TriggerAbility(CardAbility.Trigger.STATCHANGE);
     }
 
+    public void AddEndOfTurnEffect(Action effect, int turnsRemaining)
+    {
+        LingeringEffect newEffect = new LingeringEffect();
+        newEffect.effect = effect;
+        newEffect.turnsRemaining = turnsRemaining;
+
+        _endOfTurnEffects.Add(newEffect);
+    }
+
     #endregion
 
     #region Tags
 
     public void AddTag(string tag)
     {
-        _tags.Add(tag);
+        if(!_tags.Contains(tag)) _tags.Add(tag);
     }
 
     public void RemoveTag(string tag)

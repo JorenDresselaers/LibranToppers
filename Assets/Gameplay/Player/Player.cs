@@ -76,7 +76,6 @@ public class Player : NetworkBehaviour
         bool isThisPlayer = NetworkClient.localPlayer == this;
 
         _deck._isClickable = isClickable;
-        Debug.Log("Deck is clickable: " + isClickable);
 
         List<Card> cardsToToggle = new List<Card>();
         cardsToToggle.AddRange(_hand.Cards);
@@ -84,7 +83,6 @@ public class Player : NetworkBehaviour
 
         foreach (Card card in cardsToToggle)
         {
-            Debug.Log($"{card.CardName} clickable: {isClickable}");
             card._isClickable = isClickable;
         }
     }

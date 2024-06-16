@@ -55,6 +55,12 @@ public class RecruitAbility : CardAbility
     [Command]
     private void CmdActivate(Card caster)
     {
+        if (caster == null)
+        {
+            Debug.LogWarning($"Ability {name} has no valid caster");
+            return;
+        }
+
         if (!caster._player.isServer) return;
 
         Deck deck = caster._player.Deck;
@@ -68,11 +74,10 @@ public class RecruitAbility : CardAbility
             if (_recruitNames.Contains(cardData.cardName))
             {
                 Card recruitedCard = deck.CreateCard(cardData).GetComponent<Card>();
-                recruitedCard.CmdAddToBoard(caster._player.Board);
+                recruitedCard.CmdAddToBoard(caster.Board);
                 Debug.Log($"{caster.CardName} recruited {recruitedCard.CardName}");
 
                 recruitCount++;
-
                 if (recruitCount >= _recruitCount)
                 {
                     return;

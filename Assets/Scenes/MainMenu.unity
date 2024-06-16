@@ -478,7 +478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Port: 7777
   LoggerLevel: 3
-  TimeoutMS: 1000
+  TimeoutMS: 100000000
   useRelay: 1
 --- !u!1 &250406862
 GameObject:

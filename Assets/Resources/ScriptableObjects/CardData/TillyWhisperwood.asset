@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b23fc09c485ec541b287b1506808176, type: 3}
+  m_Name: TillyWhisperwood
+  m_EditorClassIdentifier: 
+  cardName: Tilly Whisperwood
+  vitality: 3
+  damage: 5
+  description: When played <b>Tilly</b> immediately calls <b>Boxty</b> and <b>Carter</b>
+    to the field. While <b>Boxty</b> and <b>Carter</b> are on the field, <b>Tilly</b>
+    gains 1 vitality for each.
+  image: {fileID: 21300000, guid: aebf6b297371aad41bddecc9a61c338d, type: 3}
+  faction: 1
+  alignment: 2
+  rarity: 2
+  isGolden: 0
+  abilities:
+  - {fileID: 11400000, guid: c4e29d368cab491479630991c92c2e02, type: 2}
+  - {fileID: 11400000, guid: 79a7e8f844a959b449f0dd68bb28e321, type: 2}
+  - {fileID: 11400000, guid: 05fbdbce5df8ccb4b8954618e62e4269, type: 2}
