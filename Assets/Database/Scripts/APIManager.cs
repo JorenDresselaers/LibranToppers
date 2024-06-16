@@ -23,7 +23,10 @@ public class APIManager : MonoBehaviour
     private string _email = "";
     private string _password = "";
     private User _user;
+    public User UserData => _user;
     private Collection _collection;
+
+    public bool IsLoggedIn => _user != null;
 
     [Serializable]
     public class User
@@ -108,6 +111,8 @@ public class APIManager : MonoBehaviour
 
     public async void LogIn()
     {
+        if (_email == "" || _password == "") return;
+
         print("Logging in");
         try
         {

@@ -48,6 +48,12 @@ public class TurnManager : NetworkBehaviour
     {
         print("Waiting for players");
         yield return new WaitUntil(() => _players.Count > 1);
+
+        foreach (Player player in _players)
+        {
+            player.RpcSyncNames();
+        }
+
         StartTurn();
     }
 

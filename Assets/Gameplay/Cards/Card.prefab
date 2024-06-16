@@ -175,7 +175,10 @@ MonoBehaviour:
   _defaultCardMaterial: {fileID: 2100000, guid: f1cf65b1649293c41a070818c58bd5ae, type: 2}
   _goldenCardMaterial: {fileID: 2100000, guid: 4c78f2ebfa01e2946b69577ff5b1e81e, type: 2}
   _flippedMaterial: {fileID: 2100000, guid: fbce1f87941c4e24ca9c7576877cdc29, type: 2}
+  _tags: []
   _isDraggable: 0
+  _isClickable: 0
+  _inspectScale: 1.5
 --- !u!54 &5097252319232498224
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1332,10 +1335,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.48
+  m_fontSize: 72
   m_fontSizeBase: 37.48
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0

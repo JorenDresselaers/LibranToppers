@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
@@ -27,6 +28,9 @@ public class Player : NetworkBehaviour
     [SerializeField] private bool _drawCardsAutomatically = true;
     [SerializeField] private int _cardsDrawnPerTurn = 5;
 
+    [Header("UI")]
+    [SerializeField] private TMP_Text _name;
+
     private void Awake()
     {
         Deck._player = this;
@@ -42,6 +46,17 @@ public class Player : NetworkBehaviour
     {
         base.OnStartServer();
         TurnManager.Instance.AddPlayer(this);
+    }
+
+    public override void OnStartClient()
+    {
+        //StartCoroutine(SetNameAfterSeconds(1f));
+    }
+
+    private IEnumerator SetNameAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        if (APIManager.Instance.IsLoggedIn) CmdSetName(APIManager.Instance.UserData.username);
     }
 
     [Server]
@@ -117,5 +132,25 @@ public class Player : NetworkBehaviour
         }
 
         ToggleClickableObjects(false);
+    }
+
+    [Command]
+    public void CmdSetName(string name)
+    {
+        print($"Setting name of {name} on server");
+        RpcSetName(name);
+    }
+
+    [ClientRpc]
+    private void RpcSetName(string name)
+    {
+        print("Setting name of " + name + " on client");
+        if (_name) _name.text = name;
+    }
+
+    [ClientRpc]
+    public void RpcSyncNames()
+    {
+        if (APIManager.Instance.IsLoggedIn) CmdSetName(APIManager.Instance.UserData.username);
     }
 }
