@@ -15,6 +15,12 @@ public class Graveyard : NetworkBehaviour
         _cardsData.Add(cardData);
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveCard(CardData cardData)
+    {
+        _cardsData.Remove(cardData);
+    }
+
     [ClientRpc]
     private void RpcAddCard(CardData cardData)
     {

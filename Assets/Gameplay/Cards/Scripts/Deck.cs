@@ -50,6 +50,14 @@ public class Deck : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
+    public void CmdAddCard(CardData cardData)
+    {
+        _cardsData.Add(cardData);
+        ShuffleCards();
+        RpcUpdateText(_cardsData.Count);
+    }
+
+    [Command(requiresAuthority = false)]
     public void CmdCreateCard()
     {
         GameObject card = CreateCard();

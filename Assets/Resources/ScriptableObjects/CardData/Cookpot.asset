@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b23fc09c485ec541b287b1506808176, type: 3}
+  m_Name: Cookpot
+  m_EditorClassIdentifier: 
+  cardName: Cookpot
+  vitality: 1
+  damage: 5
+  description: After <b>Cookpot</b> attacks, he is immediately returned to your deck.
+  image: {fileID: 21300000, guid: 04c42dc19e9e6814ea6a9b746fb01971, type: 3}
+  faction: 1
+  alignment: 2
+  rarity: 1
+  isGolden: 0
+  abilities:
+  - {fileID: 11400000, guid: 8471d3a23c0d06a4d9bbd0f5e4842173, type: 2}
+  - {fileID: 11400000, guid: dfd91d981a7fb2e43b35abc0c5735a7e, type: 2}

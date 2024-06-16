@@ -14,6 +14,7 @@ public class Card : NetworkBehaviour
     [SerializeField] private CardData _debugData;
     [SyncVar]
     private CardData _data;
+    public CardData Data => _data;
 
     [Header("Prefab Objects")]
     [SerializeField] private MeshRenderer _meshRenderer;
@@ -553,11 +554,15 @@ public class Card : NetworkBehaviour
         TriggerAbility(CardAbility.Trigger.ENTEREDBOARD);
     }
 
-    private void OnDeath()
+    private void OnDeath(bool triggerEffects = true)
     {
         _player.Graveyard.CmdAddCard(_data);
         _board.CmdRemoveCard(this);
-        TriggerAbility(CardAbility.Trigger.DEATH, false);
+
+        if (triggerEffects)
+        {
+            TriggerAbility(CardAbility.Trigger.DEATH, false);
+        }
     }
 
     private void OnDrawn()
