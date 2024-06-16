@@ -3,16 +3,28 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using System.Collections;
+using Utp;
 
 public class StartMirrorServer : MonoBehaviour
 {
     public TMP_InputField _joinCodeInput;
     public TMP_InputField _ipAddressInput;
+    public Toggle _relayToggle;
     [SerializeField] private string _sceneName;
-    public bool _useRelay = true;
+    private bool _useRelay = true;
+   [SerializeField] private UtpTransport _transport;
 
     private void Awake()
     {
+        if (_relayToggle != null)
+        {
+            _relayToggle.onValueChanged.AddListener((bool isEnabled) => 
+            {
+                _useRelay = isEnabled; 
+                _transport.useRelay = isEnabled;
+            });
+        }
+
         if(!_useRelay)
         {
             _joinCodeInput.gameObject.SetActive(false);
