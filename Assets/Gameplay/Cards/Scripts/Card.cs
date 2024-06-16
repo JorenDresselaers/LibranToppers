@@ -28,6 +28,8 @@ public class Card : NetworkBehaviour
     [SyncVar] public Player _player;
     [SyncVar] private Board _board;
     public Board Board => _board;
+    [SyncVar] private Hand _hand;
+    public Hand Hand => _hand;
 
     //[Header("Prefabs")]
 
@@ -39,7 +41,9 @@ public class Card : NetworkBehaviour
     //Data
     [SyncVar] private string _cardName;
     [SyncVar] private int _damage;
+    [SyncVar] private int _startingDamage;
     [SyncVar] private int _vitality;
+    [SyncVar] private int _startingVitality;
     private List<CardAbility> _abilities; //should probably be split up in lists per ability type
     [SyncVar] private string _description;
     private Sprite _sprite;
@@ -55,7 +59,9 @@ public class Card : NetworkBehaviour
 
     public string CardName => _cardName;
     public int Damage => _damage;
+    public int MissingDamage => _startingDamage - _damage;
     public int Vitality => _vitality;
+    public int MissingVitality => _startingVitality - _vitality;
     public CardData.Faction Faction => _faction;
     public CardData.Alignment Alignment => _alignment;
 
@@ -73,6 +79,11 @@ public class Card : NetworkBehaviour
     private bool CanInteract => _interactionsLeft > 0;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
     public bool _isClickable = false;
+
+    private Vector3 _originalScale;
+    private Quaternion _originalRotation;
+    [SerializeField] private float _inspectScale = 1.5f;
+
 
     public override void OnStartClient()
     {
@@ -96,6 +107,14 @@ public class Card : NetworkBehaviour
         _defaultCardMaterial = Instantiate(_defaultCardMaterial);
         _flippedMaterial = Instantiate(_flippedMaterial);
         _goldenCardMaterial = Instantiate(_goldenCardMaterial);
+
+        _originalScale = transform.localScale;
+        _originalRotation = transform.localRotation;
+    }
+
+    public void SetHand(Hand hand)
+    {
+        _hand = hand;
     }
 
     public void Initialize(CardData data, bool isDraggable = true)
@@ -109,7 +128,9 @@ public class Card : NetworkBehaviour
         _data = data;
         _cardName = data.cardName;
         _damage = data.damage;
+        _startingDamage = data.damage;
         _vitality = data.vitality;
+        _startingVitality = _vitality;
         _abilities = data.abilities.ToList();
         _description = data.description;
         _sprite = data.image;
@@ -238,6 +259,22 @@ public class Card : NetworkBehaviour
                 EndDrag();
             }
         }
+    }
+
+    private void OnMouseEnter()
+    {
+        // Enlarge the card and keep rotation as is
+        transform.localScale = _originalScale * _inspectScale;
+        transform.localRotation = _originalRotation;
+    }
+
+    private void OnMouseExit()
+    {
+        // Reset the card scale and rotation
+        transform.localScale = _originalScale;
+        transform.localRotation = _originalRotation;
+
+        if(_hand) _hand.UpdateCardPositions();
     }
 
     private void OnMouseDown()
@@ -452,14 +489,25 @@ public class Card : NetworkBehaviour
     {
         _vitality -= damage;
         CmdUpdateCard();
+        OnStatChange();
     }
 
-    public void ModifyStats(int assault, int vitality)
+    public void ModifyStats(int assault, int vitality, bool triggerAbilities = true)
     {
         _vitality += vitality;
         _damage += assault;
 
         CmdUpdateCard();
+        if (triggerAbilities) OnStatChange();
+    }
+
+    public void ResetStats(bool assault, bool vitality, bool triggerAbilities = true)
+    {
+        if(assault) _damage = _startingDamage;
+        if(vitality) _vitality = _startingVitality;
+
+        CmdUpdateCard();
+        if(triggerAbilities) OnStatChange();
     }
 
     #endregion
@@ -537,6 +585,11 @@ public class Card : NetworkBehaviour
     public void OnAuraCheck()
     {
         TriggerAbility(CardAbility.Trigger.AURA);
+    }
+
+    public void OnStatChange()
+    {
+        TriggerAbility(CardAbility.Trigger.STATCHANGE);
     }
 
     #endregion

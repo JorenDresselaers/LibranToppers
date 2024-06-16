@@ -49,6 +49,7 @@ public class Hand : NetworkBehaviour
         card.transform.localPosition = Vector3.zero;
         card._player = _player;
         _cards.Add(card);
+        card.SetHand(this);
         UpdateCardPositions();
     }
 
@@ -58,12 +59,13 @@ public class Hand : NetworkBehaviour
         if (_cards.Contains(card))
         {
             _cards.Remove(card);
+            card.SetHand(null);
             UpdateCardPositions();
         }
     }
 
     // Update the position of each card in the hand
-    private void UpdateCardPositions()
+    public void UpdateCardPositions()
     {
         float handWidth = _collider.size.x;
         float cardWidth = handWidth / Mathf.Clamp(_cards.Count, 1, _maxCards); // Avoid division by zero

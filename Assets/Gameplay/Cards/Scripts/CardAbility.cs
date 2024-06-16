@@ -19,14 +19,11 @@ public class CardAbility : ScriptableObject
         OTHERCARDDEFENDS,
         ENTEREDBOARD,
         AURA,
+        STATCHANGE,
     }
     public Trigger _abilityTrigger;
     [SerializeField] protected bool _isTargeted = false;
     public bool IsTargeted => _isTargeted;
-
-    //Add a struct that detects targets and whether or not they're valid
-    public struct AbilityTarget
-    { }
 
     public virtual void Activate(Card caster, List<Card> targets)
     { }
