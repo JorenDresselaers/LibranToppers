@@ -25,12 +25,18 @@ public class CardDataEditor : Editor
     {
         base.OnInspectorGUI();
 
+        CardData cardData = (CardData)target;
+
+        // Add Save button at the top of the editor
+        if (GUILayout.Button("Save"))
+        {
+            SaveChanges(cardData);
+        }
+
         EditorGUILayout.Space(25f);
         EditorGUILayout.LabelField("Create New Ability:", EditorStyles.boldLabel);
         DrawSeparator(Color.gray);
         EditorGUILayout.Space();
-
-        CardData cardData = (CardData)target;
 
         if (abilityTypes != null && abilityTypes.Count > 0)
         {
@@ -103,11 +109,30 @@ public class CardDataEditor : Editor
         }
     }
 
+    private void SaveChanges(CardData cardData)
+    {
+        EditorUtility.SetDirty(cardData);
+
+        // Iterate through the abilities and mark each as dirty
+        foreach (var ability in cardData.abilities)
+        {
+            if (ability != null)
+            {
+                EditorUtility.SetDirty(ability);
+            }
+        }
+
+        // If cardData contains other lists of ScriptableObjects, add similar code for each list
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+
     private void DrawList(SerializedProperty property)
     {
         // Explicitly manage the foldout state
         bool wasExpanded = property.isExpanded;
-        //EditorGUILayout.PropertyField(property, new GUIContent(property.displayName), true);  // Allow automatic handling when expanded
         EditorGUILayout.LabelField(property.displayName, EditorStyles.boldLabel);
 
         // Ensure the property is expanded if performing modifications
@@ -156,7 +181,6 @@ public class CardDataEditor : Editor
         // Restore the original expansion state if necessary
         property.isExpanded = wasExpanded;
     }
-
 
     private void AddAbilityOfType(CardData cardData, Type abilityType)
     {
@@ -217,7 +241,6 @@ public class CardDataEditor : Editor
     {
         Rect rect = GUILayoutUtility.GetRect(1f, 1f);
         rect.height = 3;
-        //rect.y += 10;
         rect.x -= 2;
         rect.width += 6;
         EditorGUI.DrawRect(rect, color);

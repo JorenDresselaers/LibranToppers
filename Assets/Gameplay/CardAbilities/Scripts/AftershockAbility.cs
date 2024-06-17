@@ -17,11 +17,6 @@ public class AftershockAbility : CardAbility
         CARDVITALITY
     }
 
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.ASSAULT;
-    }
-
     public override void Activate(Card caster, Card target)
     {
         int damage = source == DamageSource.CUSTOM ? _damage : source == DamageSource.CARDASSAULT ? caster.Damage : caster.Vitality;

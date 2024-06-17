@@ -20,11 +20,6 @@ public class TeamworkAbility : CardAbility
         NAME
     }
 
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.PLAYED;
-    }
-
     public override void Activate(Card caster, List<Card> targets)
     {
         Activate(caster);

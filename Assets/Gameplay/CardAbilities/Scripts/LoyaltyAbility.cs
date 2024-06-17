@@ -12,11 +12,6 @@ public class LoyaltyAbility : CardAbility
     [SerializeField] private bool _canStack = false;
     private static string Tag = "HasLoyaltyBuff";
 
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.AURA;
-    }
-
     public override void Activate(Card caster, List<Card> targets)
     {
         Activate(caster);

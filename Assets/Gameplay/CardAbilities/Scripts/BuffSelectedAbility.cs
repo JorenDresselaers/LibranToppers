@@ -10,11 +10,6 @@ public class BuffSelectedAbility : CardAbility
     [SerializeField] private int _assault = 0;
     [SerializeField] private CardData.Faction _targetFaction;
 
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.PLAYED;
-    }
-
     public override void Activate(Card caster, Card target)
     {
         if (CanTargetCard(caster, target)) target.ModifyStats(_assault, _vitality);

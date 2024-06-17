@@ -8,11 +8,6 @@ public class BerserkerAbility : CardAbility
 {
     public int _multiplier = 1;
 
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.STATCHANGE;
-    }
-
     public override void Activate(Card caster)
     {
         caster.ResetStats(true, false, false);

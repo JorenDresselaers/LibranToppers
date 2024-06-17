@@ -6,11 +6,6 @@ using UnityEngine;
 [Serializable, CreateAssetMenu(menuName = "Abilities/Retreat", fileName = "RetreatAbility")]
 public class RetreatAbility : CardAbility
 {
-    private void Awake()
-    {
-        _abilityTrigger = Trigger.DEATH;
-    }
-
     public override void Activate(Card caster)
     {
         CardData data = caster.Data;
