@@ -75,13 +75,13 @@ public class Card : NetworkBehaviour
     [SerializeField, SyncVar] private bool _isDraggable = false;
 
     [SyncVar] private int _interactionsPerTurn = 1;
-    [SyncVar] private int _interactionsLeft = 0;
+    [SyncVar] private int _interactionsThisTurn = 0;
     private bool _isTargetingAbility = false;
     [SyncVar] private CardAbility.Trigger _currentAbilityTrigger;
 
     private List<LingeringEffect> _endOfTurnEffects = new();
 
-    private bool CanInteract => _interactionsLeft > 0;
+    private bool CanInteract => _interactionsThisTurn < _interactionsPerTurn;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
     public bool _isClickable = false;
 
@@ -152,7 +152,7 @@ public class Card : NetworkBehaviour
         RemoveNullAbilities();
         UpdateText();
 
-        _interactionsLeft = _interactionsPerTurn;
+        _interactionsThisTurn = _interactionsPerTurn;
 
         _isDraggable = isDraggable;
     }
@@ -293,7 +293,7 @@ public class Card : NetworkBehaviour
         {
             BeginInteractDrag();
         }
-        else
+        else if (_interactionsThisTurn < _interactionsPerTurn)
         {
             foreach (CardAbility ability in _abilities)
             {
@@ -308,11 +308,11 @@ public class Card : NetworkBehaviour
         }
     }
 
-    public void BeginInteractDrag()
+    public void BeginInteractDrag(bool ignoreInteractLimit = false)
     {
         if (!IsOwnedByClient || !_isClickable) return;
 
-        if (CanInteract || _isDraggable)
+        if (ignoreInteractLimit || CanInteract || _isDraggable)
         {
             _startPosition = transform.position;
             _isDragging = true;
@@ -380,7 +380,7 @@ public class Card : NetworkBehaviour
     {
         OnAssault();
         card.CmdUpdateCard();
-        _interactionsLeft--;
+        _interactionsThisTurn++;
     }
 
     [Command(requiresAuthority = false)]
@@ -438,6 +438,7 @@ public class Card : NetworkBehaviour
                 if (board != null && board == _player.Board)
                 {
                     CmdAddToBoard(board);
+                    _player.OnCardPlayed();
                 }
             }
 
@@ -533,7 +534,7 @@ public class Card : NetworkBehaviour
                 {
                     _isTargetingAbility = true;
                     CmdSetCurrentTrigger(trigger);
-                    BeginInteractDrag();
+                    BeginInteractDrag(true);
                 }
                 else
                 {
@@ -587,7 +588,7 @@ public class Card : NetworkBehaviour
 
     public void OnStartOfTurn()
     {
-        _interactionsLeft = _interactionsPerTurn;
+        _interactionsThisTurn = _interactionsPerTurn;
         TriggerAbility(CardAbility.Trigger.STARTOFTURN);
     }
 

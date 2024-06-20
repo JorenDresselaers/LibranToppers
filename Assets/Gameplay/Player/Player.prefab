@@ -340,7 +340,7 @@ MonoBehaviour:
   _opponent: {fileID: 0}
   _endTurnButton: {fileID: 0}
   _drawCardsAutomatically: 1
-  _cardsDrawnPerTurn: 5
+  _cardsDrawnPerTurn: 10
   _name: {fileID: 8884768797242031081}
 --- !u!114 &-1641985432616384021
 MonoBehaviour:

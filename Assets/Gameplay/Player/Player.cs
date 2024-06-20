@@ -27,6 +27,8 @@ public class Player : NetworkBehaviour
     [Header("Settings")]
     [SerializeField] private bool _drawCardsAutomatically = true;
     [SerializeField] private int _cardsDrawnPerTurn = 5;
+    [SerializeField] private int _cardsPlayedPerTurn = 1;
+    private int _cardsPlayedThisTurn = 0;
 
     [Header("UI")]
     [SerializeField] private TMP_Text _name;
@@ -60,6 +62,20 @@ public class Player : NetworkBehaviour
     }
 
     [Server]
+    public void ServerStartOffensive()
+    {
+        // Draw cards if the setting is enabled
+        if (_drawCardsAutomatically)
+        {
+            StartCoroutine(DrawCards());
+        }
+        else
+        {
+            RpcToggleClickableObjects(true, true, true, true); //This will do weird shit
+        }
+    }
+
+    [Server]
     public void ServerStartTurn()
     {
         List<Card> cardsToUpdate = new List<Card>();
@@ -71,30 +87,20 @@ public class Player : NetworkBehaviour
             card.OnStartOfTurn();
         }
 
-        // Set the deck clickable first
-        _deck._isClickable = true;
-
-        // Draw cards if the setting is enabled
-        if (_drawCardsAutomatically)
-        {
-            StartCoroutine(DrawCards());
-        }
-        else
-        {
-            ToggleClickableObjects(true);
-        }
+        _cardsPlayedThisTurn = 0;
+        RpcToggleClickableObjects(true, true, true, true);
     }
 
     [ClientRpc]
-    private void ToggleClickableObjects(bool isClickable)
+    private void RpcToggleClickableObjects(bool isClickable, bool includeDeck, bool includeHand, bool includeBoard)
     {
         bool isThisPlayer = NetworkClient.localPlayer == this;
 
-        _deck._isClickable = isClickable;
+        if(includeDeck) _deck._isClickable = isClickable;
 
         List<Card> cardsToToggle = new List<Card>();
-        cardsToToggle.AddRange(_hand.Cards);
-        cardsToToggle.AddRange(_board.Cards);
+        if(includeHand) cardsToToggle.AddRange(_hand.Cards);
+        if(includeBoard) cardsToToggle.AddRange(_board.Cards);
 
         foreach (Card card in cardsToToggle)
         {
@@ -114,9 +120,6 @@ public class Player : NetworkBehaviour
             }
             else break;
         }
-
-        // Ensure clickable objects are toggled after all cards are drawn
-        ToggleClickableObjects(true);
     }
 
     [Server]
@@ -131,7 +134,7 @@ public class Player : NetworkBehaviour
             card.OnEndOfTurn();
         }
 
-        ToggleClickableObjects(false);
+        RpcToggleClickableObjects(false, true, true, true);
     }
 
     [Command]
@@ -152,5 +155,15 @@ public class Player : NetworkBehaviour
     public void RpcSyncNames()
     {
         if (APIManager.Instance.IsLoggedIn) CmdSetName(APIManager.Instance.UserData.username);
+    }
+
+    [Command]
+    public void OnCardPlayed()
+    {
+        _cardsPlayedThisTurn++;
+        if (_cardsPlayedThisTurn >= _cardsPlayedPerTurn)
+        {
+            RpcToggleClickableObjects(false, false, true, false);
+        }
     }
 }

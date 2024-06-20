@@ -35,7 +35,7 @@ public class TurnManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        StartCoroutine(StartTurnWhenReady());
+        StartCoroutine(StartOffensiveWhenReady());
     }
 
     [ClientRpc]
@@ -55,6 +55,43 @@ public class TurnManager : NetworkBehaviour
         }
 
         StartTurn();
+    }
+    
+    private IEnumerator StartOffensiveWhenReady()
+    {
+        print("Waiting for players");
+        yield return new WaitUntil(() => _players.Count > 1);
+
+        foreach (Player player in _players)
+        {
+            player.RpcSyncNames();
+        }
+
+        StartOffensive();
+    }
+
+    private void StartOffensive()
+    {
+        foreach (Player player in _players)
+        {
+            player.ServerStartOffensive();
+        }
+
+        print($"Turn started for player {_currentPlayerIndex}");
+
+        // Get the current player
+        Player currentPlayer = _players[_currentPlayerIndex];
+        currentPlayer.ServerStartTurn();
+
+        foreach (Player player in _players)
+        {
+            if (player != currentPlayer)
+            {
+                player.ServerEndTurn();
+            }
+        }
+
+        RpcColourButton(currentPlayer);
     }
 
     private void StartTurn()
