@@ -119,6 +119,7 @@ public class TurnManager : NetworkBehaviour
         int playersWithCardsLeft = 0;
         foreach (Player player in _players)
         {
+            player.ServerEndTurn();
             player.ServerEndOffensive();
             if (player.TotalCardsRemaining > 0) playersWithCardsLeft++;
         }
@@ -165,6 +166,10 @@ public class TurnManager : NetworkBehaviour
 
     private void EndGame(Player winner)
     {
+        foreach(Player player in _players)
+        {
+            player.ServerEndGame();
+        }
         print($"The game is now over!");
         RpcSetEndText(winner);
     }

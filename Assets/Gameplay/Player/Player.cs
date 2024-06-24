@@ -132,9 +132,14 @@ public class Player : NetworkBehaviour
                 if(card.Board != null) card.Board.CmdRemoveCard(card);
                 if(card.Hand != null) card.Hand.RemoveCard(card);
                 card._player.Deck.CmdAddCard(data);
+                Destroy(card.gameObject);
             }
         }
+    }
 
+    [Server]
+    public void ServerEndGame()
+    {
         ToggleVisuals(false);
     }
 
