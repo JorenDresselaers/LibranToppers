@@ -41,6 +41,8 @@ public class Player : NetworkBehaviour
     public int TotalCardsRemaining => _hand.Cards.Count + _board.Cards.Count + _deck.CardsData.Count;
     public int CardsLeftInOffensive => _hand.Cards.Count + _board.Cards.Count;
 
+    private Coroutine _drawCardsCoroutine;
+
     private void Awake()
     {
         Deck._player = this;
@@ -105,11 +107,12 @@ public class Player : NetworkBehaviour
     public void ServerStartOffensive()
     {
         ToggleVisuals(true);
+        _deck._isClickable = true;
 
         // Draw cards if the setting is enabled
-        if (_drawCardsAutomatically)
+        if (_drawCardsAutomatically && _drawCardsCoroutine == null)
         {
-            StartCoroutine(DrawCards());
+            _drawCardsCoroutine = StartCoroutine(DrawCards());
         }
         else
         {
@@ -129,7 +132,7 @@ public class Player : NetworkBehaviour
             if (card != null)
             {
                 CardData data = card.Data;
-                if(card.Board != null) card.Board.CmdRemoveCard(card);
+                if(card.Board != null) card.Board.CmdRemoveCard(card, false);
                 if(card.Hand != null) card.Hand.RemoveCard(card);
                 card._player.Deck.CmdAddCard(data);
                 Destroy(card.gameObject);
@@ -157,6 +160,7 @@ public class Player : NetworkBehaviour
 
         _cardsPlayedThisTurn = 0;
         RpcToggleClickableObjects(true, true, true, true);
+        print($"{_username}'s turn started");
     }
 
     [ClientRpc]
@@ -179,6 +183,7 @@ public class Player : NetworkBehaviour
     [Server]
     private IEnumerator DrawCards()
     {
+        print("Drawing cards for " + _username);
         for (int i = 0; i < _cardsDrawnPerTurn; i++)
         {
             if (!Hand.IsFull)
@@ -188,6 +193,7 @@ public class Player : NetworkBehaviour
             }
             else break;
         }
+        _drawCardsCoroutine = null;
     }
 
     [Server]
@@ -203,6 +209,7 @@ public class Player : NetworkBehaviour
         }
 
         RpcToggleClickableObjects(false, true, true, true);
+        print($"{_username}'s turn ended");
     }
 
     [Command]

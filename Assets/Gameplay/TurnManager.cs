@@ -19,7 +19,7 @@ public class TurnManager : NetworkBehaviour
 
     public EndTurnOnClick _endTurnButton;
 
-    private Coroutine _endingGameCoroutine;
+    private Coroutine _endOffensiveCoroutine;
 
     public void AddPlayer(Player player)
     {
@@ -97,7 +97,7 @@ public class TurnManager : NetworkBehaviour
             player.ServerStartOffensive();
         }
 
-        print($"Turn started for player {_currentPlayerIndex}");
+        print($"Offensive started");
 
         // Get the current player
         Player currentPlayer = _players[_currentPlayerIndex];
@@ -119,13 +119,14 @@ public class TurnManager : NetworkBehaviour
         int playersWithCardsLeft = 0;
         foreach (Player player in _players)
         {
-            player.ServerEndTurn();
+            //player.ServerEndTurn();
             player.ServerEndOffensive();
             if (player.TotalCardsRemaining > 0) playersWithCardsLeft++;
         }
 
         if(playersWithCardsLeft > 1)
         {
+            print("Players still have cards, starting new offensive");
             StartOffensive();
         }
         else
@@ -151,9 +152,10 @@ public class TurnManager : NetworkBehaviour
 
     public void EndOffensiveAfterSeconds(float seconds)
     {
-        if (_endingGameCoroutine == null)
+        if (_endOffensiveCoroutine == null)
         {
-            _endingGameCoroutine = StartCoroutine(EndOffensiveAfterSecondsCoroutine(seconds));
+            print("Ending offensive");
+            _endOffensiveCoroutine = StartCoroutine(EndOffensiveAfterSecondsCoroutine(seconds));
         }
     }
 
@@ -162,6 +164,8 @@ public class TurnManager : NetworkBehaviour
         yield return new WaitForSeconds(seconds);
 
         EndOffensive();
+        _endOffensiveCoroutine = null;
+        print("Offensive ended");
     }
 
     private void EndGame(Player winner)
@@ -182,11 +186,12 @@ public class TurnManager : NetworkBehaviour
         Player currentPlayer = _players[_currentPlayerIndex];
         currentPlayer.ServerStartTurn();
 
-        foreach(Player player in _players)
+        foreach (Player player in _players)
         {
             if(player != currentPlayer)
             {
                 player.ServerEndTurn();
+                print($"{player.Username}'s turn started");
             }
         }
 

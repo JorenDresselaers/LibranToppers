@@ -9,7 +9,7 @@ public class RetreatAbility : CardAbility
     public override void Activate(Card caster)
     {
         CardData data = caster.Data;
-        caster.Board.CmdRemoveCard(caster);
+        caster.Board.CmdRemoveCard(caster, true);
         caster._player.Deck.CmdAddCard(data);
     }
 

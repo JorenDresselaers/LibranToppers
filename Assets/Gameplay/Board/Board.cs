@@ -64,7 +64,7 @@ public class Board : NetworkBehaviour
 
     //This should have an intermediary step that checks for client or server, and calls the appropriate function
     [Command(requiresAuthority = false)]
-    public void CmdRemoveCard(Card card)
+    public void CmdRemoveCard(Card card, bool checkForEndOffensive)
     {
         _cards.Remove(card);
         RpcRemoveCard(card);
@@ -79,7 +79,7 @@ public class Board : NetworkBehaviour
         }
 
         RpcUpdateCardPositions();
-        _player.CheckIfOffensiveOver();
+        if(checkForEndOffensive) _player.CheckIfOffensiveOver();
     }
 
     [ClientRpc]

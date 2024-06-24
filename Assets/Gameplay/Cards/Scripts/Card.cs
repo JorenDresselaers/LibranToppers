@@ -567,7 +567,7 @@ public class Card : NetworkBehaviour
     private void OnDeath(bool triggerEffects = true)
     {
         _player.Graveyard.CmdAddCard(_data);
-        _board.CmdRemoveCard(this);
+        _board.CmdRemoveCard(this, true);
 
         if (triggerEffects)
         {

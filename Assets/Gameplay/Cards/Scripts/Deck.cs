@@ -37,7 +37,7 @@ public class Deck : NetworkBehaviour
                 card.Initialize(data);
                 card._player = _player;
                 card._isClickable = _isClickable;
-                print("Card created with clickable = " + _isClickable);
+                print($"Card {card.CardName} created");
 
                 NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.RemoveAt(0);
