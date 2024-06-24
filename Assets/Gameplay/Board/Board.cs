@@ -79,6 +79,7 @@ public class Board : NetworkBehaviour
         }
 
         RpcUpdateCardPositions();
+        _player.CheckIfOffensiveOver();
     }
 
     [ClientRpc]

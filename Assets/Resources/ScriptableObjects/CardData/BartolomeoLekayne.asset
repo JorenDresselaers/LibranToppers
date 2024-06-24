@@ -23,3 +23,4 @@ MonoBehaviour:
   isGolden: 0
   abilities:
   - {fileID: 11400000, guid: ad6d68514df7d344d800cf055829b9e6, type: 2}
+  - {fileID: 11400000, guid: 13f09b3271e2cc14b8336c0d7eb938d6, type: 2}

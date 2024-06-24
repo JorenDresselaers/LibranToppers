@@ -7,6 +7,8 @@ using UnityEngine;
 public class Player : NetworkBehaviour
 {
     [Header("Scene Objects")]
+    [SerializeField] private GameObject _gameElements;
+
     [SerializeField] private Deck _deck;
     public Deck Deck => _deck;
 
@@ -23,15 +25,21 @@ public class Player : NetworkBehaviour
     public Player Opponent => _opponent;
 
     public EndTurnOnClick _endTurnButton;
+    private TurnManager _turnManager;
 
     [Header("Settings")]
     [SerializeField] private bool _drawCardsAutomatically = true;
     [SerializeField] private int _cardsDrawnPerTurn = 5;
     [SerializeField] private int _cardsPlayedPerTurn = 1;
     private int _cardsPlayedThisTurn = 0;
+    [SyncVar] private string _username;
+    public string Username => _username;
 
     [Header("UI")]
     [SerializeField] private TMP_Text _name;
+
+    public int TotalCardsRemaining => _hand.Cards.Count + _board.Cards.Count + _deck.CardsData.Count;
+    public int CardsLeftInOffensive => _hand.Cards.Count + _board.Cards.Count;
 
     private void Awake()
     {
@@ -48,11 +56,43 @@ public class Player : NetworkBehaviour
     {
         base.OnStartServer();
         TurnManager.Instance.AddPlayer(this);
+        _turnManager = TurnManager.Instance;
     }
 
-    public override void OnStartClient()
+    public void ToggleVisuals(bool enabled)
     {
-        //StartCoroutine(SetNameAfterSeconds(1f));
+        if (isServer) RpcToggleVisuals(enabled);
+        else CmdToggleVisuals(enabled);
+    }
+    
+    [ClientRpc]
+    private void RpcToggleVisuals(bool enabled)
+    {
+        _gameElements.SetActive(enabled);
+    }
+
+    [Command]
+    private void CmdToggleVisuals(bool enabled)
+    {
+        RpcToggleVisuals(enabled);
+    }
+
+    [ClientRpc]
+    public void RpcSetOpponent(Player opponent)
+    {
+        _opponent = opponent;
+    }
+
+    [Command]
+    public void CmdSetOpponent(Player opponent)
+    {
+        RpcSetOpponent(opponent);
+    }
+
+    public void SetOpponent(Player opponent)
+    {
+        if (isServer) RpcSetOpponent(opponent);
+        else CmdSetOpponent(opponent);
     }
 
     private IEnumerator SetNameAfterSeconds(float seconds)
@@ -64,6 +104,8 @@ public class Player : NetworkBehaviour
     [Server]
     public void ServerStartOffensive()
     {
+        ToggleVisuals(true);
+
         // Draw cards if the setting is enabled
         if (_drawCardsAutomatically)
         {
@@ -73,6 +115,27 @@ public class Player : NetworkBehaviour
         {
             RpcToggleClickableObjects(true, true, true, true); //This will do weird shit
         }
+    }
+    
+    [Server]
+    public void ServerEndOffensive()
+    {
+        List<Card> cardsToUpdate = new List<Card>();
+        cardsToUpdate.AddRange(_hand.Cards);
+        cardsToUpdate.AddRange(_board.Cards);
+
+        foreach (Card card in cardsToUpdate)
+        {
+            if (card != null)
+            {
+                CardData data = card.Data;
+                if(card.Board != null) card.Board.CmdRemoveCard(card);
+                if(card.Hand != null) card.Hand.RemoveCard(card);
+                card._player.Deck.CmdAddCard(data);
+            }
+        }
+
+        ToggleVisuals(false);
     }
 
     [Server]
@@ -141,6 +204,7 @@ public class Player : NetworkBehaviour
     public void CmdSetName(string name)
     {
         print($"Setting name of {name} on server");
+        _username = name;
         RpcSetName(name);
     }
 
@@ -158,12 +222,24 @@ public class Player : NetworkBehaviour
     }
 
     [Command]
-    public void OnCardPlayed()
+    public void CmdOnCardPlayed()
     {
         _cardsPlayedThisTurn++;
         if (_cardsPlayedThisTurn >= _cardsPlayedPerTurn)
         {
             RpcToggleClickableObjects(false, false, true, false);
         }
+    }
+
+    [Server]
+    public bool CheckIfOffensiveOver()
+    {
+        if(CardsLeftInOffensive <= 0 || _opponent.CardsLeftInOffensive <= 0)
+        {
+            print("Ending offensive");
+            _turnManager.EndOffensiveAfterSeconds(1f);
+            return true;
+        }
+        return false;
     }
 }

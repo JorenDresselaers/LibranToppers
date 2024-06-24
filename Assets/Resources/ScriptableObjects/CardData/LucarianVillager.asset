@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: Lucarian Villager
   vitality: 1
   damage: 1
-  description: "The heart of our civilization. Our biggest fans.\r"
+  description: Add 1 Vitality to a Mortal of choice.
   image: {fileID: 21300000, guid: cb56792725f4adf4d84e5a89476ae2eb, type: 3}
   faction: 2
   alignment: 2
@@ -23,3 +23,4 @@ MonoBehaviour:
   isGolden: 0
   abilities:
   - {fileID: 11400000, guid: c3b0563a5d9b7c3428d655586a15a074, type: 2}
+  - {fileID: 11400000, guid: bd7450f6c3f7ffc4a9512b622fd1f9c9, type: 2}

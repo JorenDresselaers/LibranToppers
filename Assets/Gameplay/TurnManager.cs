@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class TurnManager : NetworkBehaviour
 {
     private static TurnManager _instance;
     public static TurnManager Instance => _instance;
+
+    [SerializeField] private TextMeshProUGUI _endScreenText;
 
     [SyncVar]
     public List<Player> _players = new(); // List of players in the game
@@ -15,6 +18,8 @@ public class TurnManager : NetworkBehaviour
     private int _currentPlayerIndex = 0; // Index of the current player
 
     public EndTurnOnClick _endTurnButton;
+
+    private Coroutine _endingGameCoroutine;
 
     public void AddPlayer(Player player)
     {
@@ -30,6 +35,7 @@ public class TurnManager : NetworkBehaviour
         }
 
         _instance = this;
+        _endScreenText.gameObject.SetActive(false);
     }
 
     public override void OnStartServer()
@@ -54,6 +60,8 @@ public class TurnManager : NetworkBehaviour
             player.RpcSyncNames();
         }
 
+        SetOpponents();
+
         StartTurn();
     }
     
@@ -67,7 +75,19 @@ public class TurnManager : NetworkBehaviour
             player.RpcSyncNames();
         }
 
+        SetOpponents();
+
         StartOffensive();
+    }
+
+    private void SetOpponents()
+    {
+        for (int currentPlayer = 0; currentPlayer < _players.Count; currentPlayer++)
+        {
+            int opponentIndex = currentPlayer + 1;
+            if (opponentIndex >= _players.Count) opponentIndex = 0;
+            _players[currentPlayer].SetOpponent(_players[opponentIndex]);
+        }
     }
 
     private void StartOffensive()
@@ -92,6 +112,61 @@ public class TurnManager : NetworkBehaviour
         }
 
         RpcColourButton(currentPlayer);
+    }
+
+    public void EndOffensive()
+    {
+        int playersWithCardsLeft = 0;
+        foreach (Player player in _players)
+        {
+            player.ServerEndOffensive();
+            if (player.TotalCardsRemaining > 0) playersWithCardsLeft++;
+        }
+
+        if(playersWithCardsLeft > 1)
+        {
+            StartOffensive();
+        }
+        else
+        {
+            Player winner = null;
+            foreach (Player player in _players)
+            {
+                if (player.TotalCardsRemaining > 0) winner = player;
+            }
+            EndGame(winner);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcSetEndText(Player winner)
+    {
+        _endScreenText.gameObject.SetActive(true);
+        string endText = "This should not be here";
+        endText = winner.isLocalPlayer ? "Victory!" : "Defeat!";
+
+        _endScreenText.text = endText;
+    }
+
+    public void EndOffensiveAfterSeconds(float seconds)
+    {
+        if (_endingGameCoroutine == null)
+        {
+            _endingGameCoroutine = StartCoroutine(EndOffensiveAfterSecondsCoroutine(seconds));
+        }
+    }
+
+    private IEnumerator EndOffensiveAfterSecondsCoroutine(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        EndOffensive();
+    }
+
+    private void EndGame(Player winner)
+    {
+        print($"The game is now over!");
+        RpcSetEndText(winner);
     }
 
     private void StartTurn()

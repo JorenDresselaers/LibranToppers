@@ -122,6 +122,7 @@ public class Deck : NetworkBehaviour
                 if(isServer) NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.Remove(data);
                 ShuffleCards();
+                RpcUpdateText(_cardsData.Count);
 
                 return cardObject;
             }

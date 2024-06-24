@@ -343,6 +343,7 @@ public class Card : NetworkBehaviour
         if(other)
         {
             CmdInteract(other);
+            _interactionsThisTurn++;
         }
     }
 
@@ -438,7 +439,7 @@ public class Card : NetworkBehaviour
                 if (board != null && board == _player.Board)
                 {
                     CmdAddToBoard(board);
-                    _player.OnCardPlayed();
+                    _player.CmdOnCardPlayed();
                 }
             }
 
@@ -491,11 +492,6 @@ public class Card : NetworkBehaviour
     #endregion
     #region Interactions
 
-    private void TakeAction()
-    {
-
-    }
-
     public void Assault(int damage)
     {
         _vitality -= damage;
@@ -519,6 +515,19 @@ public class Card : NetworkBehaviour
 
         CmdUpdateCard();
         if(triggerAbilities) OnStatChange();
+    }
+
+    [ClientRpc]
+    private void RpcResetInteractionsThisTurn()
+    {
+        _interactionsThisTurn = 0;
+    }
+
+
+    [Command]
+    private void CmdResetInteractionsThisTurn()
+    {
+        RpcResetInteractionsThisTurn();
     }
 
     #endregion
@@ -588,7 +597,9 @@ public class Card : NetworkBehaviour
 
     public void OnStartOfTurn()
     {
-        _interactionsThisTurn = _interactionsPerTurn;
+        if (isServer) RpcResetInteractionsThisTurn();
+        else CmdResetInteractionsThisTurn();
+        
         TriggerAbility(CardAbility.Trigger.STARTOFTURN);
     }
 

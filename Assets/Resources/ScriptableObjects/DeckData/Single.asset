@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4e09205181a8364abf7b299d902577f, type: 3}
-  m_Name: Belle Hosoda AssaultAbility 1
+  m_Script: {fileID: 11500000, guid: 9dc2e7e6998e13441a8ae2a6693031fa, type: 3}
+  m_Name: Single
   m_EditorClassIdentifier: 
-  _abilityTrigger: 2
-  _isTargeted: 0
+  deckName: 
+  cards:
+  - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
+  - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
