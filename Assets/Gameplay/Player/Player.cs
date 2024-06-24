@@ -110,9 +110,9 @@ public class Player : NetworkBehaviour
         _deck._isClickable = true;
 
         // Draw cards if the setting is enabled
-        if (_drawCardsAutomatically && _drawCardsCoroutine == null)
+        if (_drawCardsAutomatically)
         {
-            _drawCardsCoroutine = StartCoroutine(DrawCards());
+            if(_drawCardsCoroutine == null) _drawCardsCoroutine = StartCoroutine(DrawCards());
         }
         else
         {
@@ -189,7 +189,7 @@ public class Player : NetworkBehaviour
             if (!Hand.IsFull)
             {
                 Deck.CmdCreateCard();
-                yield return new WaitForSeconds(0.1f); // Allow time for cards to be created and synced
+                yield return new WaitForSeconds(0.2f); // Allow time for cards to be created and synced
             }
             else break;
         }

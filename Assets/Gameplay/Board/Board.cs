@@ -66,20 +66,23 @@ public class Board : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdRemoveCard(Card card, bool checkForEndOffensive)
     {
-        _cards.Remove(card);
-        RpcRemoveCard(card);
-        Destroy(card.gameObject);
-
-        List<Card> cardsOnAllBoards = new();
-        cardsOnAllBoards.AddRange(_cards);
-        if (_player.Opponent != null) cardsOnAllBoards.AddRange(_player.Opponent.Board.Cards);
-        foreach (Card boardCard in cardsOnAllBoards) 
+        if (card != null)
         {
-            boardCard.OnAuraCheck();
-        }
+            _cards.Remove(card);
+            RpcRemoveCard(card);
+            Destroy(card.gameObject);
 
-        RpcUpdateCardPositions();
-        if(checkForEndOffensive) _player.CheckIfOffensiveOver();
+            List<Card> cardsOnAllBoards = new();
+            cardsOnAllBoards.AddRange(_cards);
+            if (_player.Opponent != null) cardsOnAllBoards.AddRange(_player.Opponent.Board.Cards);
+            foreach (Card boardCard in cardsOnAllBoards)
+            {
+                boardCard.OnAuraCheck();
+            }
+
+            RpcUpdateCardPositions();
+            if (checkForEndOffensive) _player.CheckIfOffensiveOver();
+        }
     }
 
     [ClientRpc]
