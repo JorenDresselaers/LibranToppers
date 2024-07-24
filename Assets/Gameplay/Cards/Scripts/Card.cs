@@ -19,6 +19,7 @@ public class Card : NetworkBehaviour
     [Header("Prefab Objects")]
     [SerializeField] private MeshRenderer _meshRenderer;
     [SerializeField] private Canvas _canvas;
+    [SerializeField] private Canvas _cardBackCanvas;
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _vitalityText;
     [SerializeField] private TextMeshProUGUI _damageText;
@@ -189,11 +190,13 @@ public class Card : NetworkBehaviour
         if (_player?.gameObject == NetworkClient.localPlayer?.gameObject)
         {
             _canvas.enabled = true;
+            _cardBackCanvas.enabled = false;
             _meshRenderer.material = _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
         }
         else
         {
             _canvas.enabled = !_isFlipped;
+            _cardBackCanvas.enabled = _isFlipped;
             _meshRenderer.material = _isFlipped ? _flippedMaterial : _isGolden ? _goldenCardMaterial : _defaultCardMaterial;
         }
     }
