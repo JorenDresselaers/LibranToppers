@@ -227,4 +227,9 @@ public class TurnManager : NetworkBehaviour
         //player.EndTurn();
         StartNextTurn();
     }
+
+    public bool IsThisPlayersTurn(Player player)
+    {
+        return _players[_currentPlayerIndex] == player;
+    }
 }

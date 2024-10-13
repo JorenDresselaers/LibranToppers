@@ -14,6 +14,7 @@ public class Deck : NetworkBehaviour
     public List<CardData> CardsData => _cardsData;
     [SerializeField] private Hand _hand;
     [SerializeField] private bool _moveCardToHand = true;
+    [SerializeField] private GameObject _interactionIndicator;
 
     public bool _isClickable = false;
     public bool ClickToDrawCards { get; set; } = true;
@@ -37,7 +38,7 @@ public class Deck : NetworkBehaviour
                 card.Initialize(data);
                 card._player = _player;
                 card._isClickable = _isClickable;
-                print($"Card {card.CardName} created");
+                //print($"Card {card.CardName} created");
 
                 NetworkServer.Spawn(cardObject, _player.gameObject);
                 _cardsData.RemoveAt(0);
@@ -160,5 +161,10 @@ public class Deck : NetworkBehaviour
     {
         if (!_cardsRemainingText) return;
         _cardsRemainingText.text = cardsRemaining.ToString();
+    }
+
+    public void ToggleInteractionIndicator(bool toggle)
+    {
+        _interactionIndicator.SetActive(toggle);
     }
 }

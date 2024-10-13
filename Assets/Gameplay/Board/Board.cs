@@ -16,6 +16,8 @@ public class Board : NetworkBehaviour
     public List<Card> Cards => _cards;
     public bool IsFull => _cards.Count >= _maxCards;
 
+    public bool CanCardsInteract => GetCardInteractionsRemaining() > 0;
+
     private void Awake()
     {
         if (!_collider)
@@ -118,5 +120,24 @@ public class Board : NetworkBehaviour
             float xPosition = startX + (i * (cardWidth));
             _cards[i].transform.localPosition = new Vector3(xPosition, _startPosition.y, _startPosition.z);
         }
+    }
+
+    /// <summary>
+    /// Returns 1 per card, does not take multiple action cards into account
+    /// </summary>
+    public int GetCardInteractionsRemaining()
+    {
+        int remaining = 0;
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            if(_cards[i].CanInteract) remaining++;
+        }
+
+        return remaining;
+    }
+
+    public void OnCardInteract(Card caster, Card target)
+    {
+        _player.CmdOnCardInteracted(caster, target);
     }
 }

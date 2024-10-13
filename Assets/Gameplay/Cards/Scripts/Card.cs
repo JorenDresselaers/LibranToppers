@@ -83,7 +83,7 @@ public class Card : NetworkBehaviour
 
     private List<LingeringEffect> _endOfTurnEffects = new();
 
-    private bool CanInteract => _interactionsThisTurn < _interactionsPerTurn;
+    public bool CanInteract => _interactionsThisTurn < _interactionsPerTurn;
     private bool IsOwnedByClient => _player.gameObject == NetworkClient.localPlayer.gameObject;
     public bool _isClickable = false;
 
@@ -348,6 +348,7 @@ public class Card : NetworkBehaviour
         {
             CmdInteract(other);
             _interactionsThisTurn++;
+            _board.OnCardInteract(this, other);
         }
         ToggleInteractionIndicator(CanInteract);
     }
@@ -528,7 +529,6 @@ public class Card : NetworkBehaviour
         _interactionsThisTurn = 0;
     }
 
-
     [Command]
     private void CmdResetInteractionsThisTurn()
     {
@@ -537,22 +537,21 @@ public class Card : NetworkBehaviour
 
     public void ToggleInteractionIndicator(bool toggle)
     {
-        if (CanInteract)
-        {
-            _canInteractIndicatorObject.SetActive(toggle);
-
-        }
-        else
-        {
-            _canInteractIndicatorObject.SetActive(false);
-        }
+           _canInteractIndicatorObject.SetActive(toggle);
     }
 
     public void UpdateInteractionIndicator()
     {
         if (IsOwnedByClient)
         {
-            ToggleInteractionIndicator(CanInteract);
+            if (_hand == null)
+            {
+                ToggleInteractionIndicator(CanInteract);
+            }
+            else
+            {
+                ToggleInteractionIndicator(_player.CanPlayCards);
+            }
         }
         else
         {

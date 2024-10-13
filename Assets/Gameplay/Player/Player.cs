@@ -2,7 +2,10 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class Player : NetworkBehaviour
 {
@@ -32,6 +35,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private int _cardsDrawnPerTurn = 5;
     [SerializeField] private int _cardsPlayedPerTurn = 1;
     private int _cardsPlayedThisTurn = 0;
+    public bool CanPlayCards => _cardsPlayedThisTurn < _cardsPlayedPerTurn;
+
     [SyncVar] private string _username;
     public string Username => _username;
 
@@ -59,6 +64,14 @@ public class Player : NetworkBehaviour
         base.OnStartServer();
         TurnManager.Instance.AddPlayer(this);
         _turnManager = TurnManager.Instance;
+        _endTurnButton = _turnManager._endTurnButton;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        _turnManager = TurnManager.Instance;
+        _endTurnButton = _turnManager._endTurnButton;
     }
 
     public void ToggleVisuals(bool enabled)
@@ -118,6 +131,8 @@ public class Player : NetworkBehaviour
         {
             RpcToggleClickableObjects(true, true, true, true); //This will do weird shit
         }
+
+        //RpcUpdateCardInteractionIndicators();
     }
     
     [Server]
@@ -138,6 +153,8 @@ public class Player : NetworkBehaviour
                 Destroy(card.gameObject);
             }
         }
+
+        //RpcToggleCardInteractionIndicators(false, true, true);
     }
 
     [Server]
@@ -160,6 +177,7 @@ public class Player : NetworkBehaviour
 
         _cardsPlayedThisTurn = 0;
         RpcToggleClickableObjects(true, true, true, true);
+        RpcUpdateCardInteractionIndicators();
         print($"{_username}'s turn started");
     }
 
@@ -177,8 +195,44 @@ public class Player : NetworkBehaviour
         foreach (Card card in cardsToToggle)
         {
             card._isClickable = isClickable;
-            card.ToggleInteractionIndicator(isClickable);
+            //card.ToggleInteractionIndicator(isClickable);
         }
+    }
+
+    [ClientRpc]
+    private void RpcUpdateCardInteractionIndicators()
+    {
+        List<Card> cardsToToggle = new List<Card>();
+        cardsToToggle.AddRange(_hand.Cards);
+        cardsToToggle.AddRange(_board.Cards);
+
+        foreach (Card card in cardsToToggle)
+        {
+            card.UpdateInteractionIndicator();
+        }
+
+        print("Updating indicators");
+    }
+
+    [ClientRpc]
+    private void RpcToggleCardInteractionIndicators(bool toggle, bool includeHand, bool includeBoard)
+    {
+        List<Card> cardsToToggle = new List<Card>();
+        if (includeHand) cardsToToggle.AddRange(_hand.Cards);
+        if (includeBoard) cardsToToggle.AddRange(_board.Cards);
+
+        foreach (Card card in cardsToToggle)
+        {
+            card.ToggleInteractionIndicator(toggle);
+        }
+
+        print("Toggling indicators to " + toggle);
+    }
+
+    [ClientRpc]
+    private void RpcToggleEndTurnInteractionIndicator(bool toggle)
+    {
+        _endTurnButton.ToggleInteractionIndicator(toggle);
     }
 
     [Server]
@@ -194,6 +248,11 @@ public class Player : NetworkBehaviour
             }
             else break;
         }
+        
+        print("Updating cards, cards in hand: " + _hand.Cards.Count);
+
+        if(_turnManager.IsThisPlayersTurn(this)) RpcUpdateCardInteractionIndicators();
+        else RpcToggleCardInteractionIndicators(false, true, true);
         _drawCardsCoroutine = null;
     }
 
@@ -210,6 +269,8 @@ public class Player : NetworkBehaviour
         }
 
         RpcToggleClickableObjects(false, true, true, true);
+        RpcToggleCardInteractionIndicators(false, true, true);
+        RpcToggleEndTurnInteractionIndicator(false);
         print($"{_username}'s turn ended");
     }
 
@@ -241,7 +302,13 @@ public class Player : NetworkBehaviour
         if (_cardsPlayedThisTurn >= _cardsPlayedPerTurn)
         {
             RpcToggleClickableObjects(false, false, true, false);
+            RpcToggleCardInteractionIndicators(false, true, false);
         }
+    }
+
+    public void CmdOnCardInteracted(Card caster, Card target)
+    {
+        if (!_board.CanCardsInteract) _endTurnButton.ToggleInteractionIndicator(true);
     }
 
     [Server]

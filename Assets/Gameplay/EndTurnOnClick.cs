@@ -7,6 +7,7 @@ using UnityEngine;
 public class EndTurnOnClick : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
+    [SerializeField] private GameObject _interactionIndicator;
 
     private void OnMouseDown()
     {
@@ -17,5 +18,10 @@ public class EndTurnOnClick : NetworkBehaviour
     public void SetText(string text)
     {
         _text.text = text;
+    }
+
+    public void ToggleInteractionIndicator(bool toggle)
+    {
+        _interactionIndicator.SetActive(toggle);
     }
 }
