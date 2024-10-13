@@ -177,6 +177,7 @@ public class Player : NetworkBehaviour
         foreach (Card card in cardsToToggle)
         {
             card._isClickable = isClickable;
+            card.ToggleInteractionIndicator(isClickable);
         }
     }
 

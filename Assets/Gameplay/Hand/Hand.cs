@@ -90,4 +90,12 @@ public class Hand : NetworkBehaviour
         float tilt = -maxTiltAngle * (index - middleIndex) / middleIndex; // Scale tilt relative to distance from center
         return tilt;
     }
+
+    public void UpdateCardInteractionIndicators()
+    {
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            _cards[i].UpdateInteractionIndicator();
+        }
+    }
 }

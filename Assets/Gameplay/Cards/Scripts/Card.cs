@@ -27,6 +27,7 @@ public class Card : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI _factionText;
     [SerializeField] private TextMeshProUGUI _alignmentText;
     [SerializeField] private Image _image;
+    [SerializeField] private GameObject _canInteractIndicatorObject;
 
     [Header("Scene Objects")]
     [SyncVar] public Player _player;
@@ -348,6 +349,7 @@ public class Card : NetworkBehaviour
             CmdInteract(other);
             _interactionsThisTurn++;
         }
+        ToggleInteractionIndicator(CanInteract);
     }
 
     [Command]
@@ -533,6 +535,31 @@ public class Card : NetworkBehaviour
         RpcResetInteractionsThisTurn();
     }
 
+    public void ToggleInteractionIndicator(bool toggle)
+    {
+        if (CanInteract)
+        {
+            _canInteractIndicatorObject.SetActive(toggle);
+
+        }
+        else
+        {
+            _canInteractIndicatorObject.SetActive(false);
+        }
+    }
+
+    public void UpdateInteractionIndicator()
+    {
+        if (IsOwnedByClient)
+        {
+            ToggleInteractionIndicator(CanInteract);
+        }
+        else
+        {
+            ToggleInteractionIndicator(false);
+        }
+    }
+
     #endregion
     #region Ability Triggers
 
@@ -604,6 +631,7 @@ public class Card : NetworkBehaviour
         else CmdResetInteractionsThisTurn();
         
         TriggerAbility(CardAbility.Trigger.STARTOFTURN);
+        ToggleInteractionIndicator(CanInteract);
     }
 
     public void OnEndOfTurn()
@@ -626,6 +654,7 @@ public class Card : NetworkBehaviour
         {
             _endOfTurnEffects.RemoveAt(toRemove);
         }
+        ToggleInteractionIndicator(false);
     }
 
     public void OnAuraCheck()

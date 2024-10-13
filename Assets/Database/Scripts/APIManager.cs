@@ -137,6 +137,12 @@ public class APIManager : MonoBehaviour
         _statusText.text = "Failed to log in.";
     }
 
+
+    public void SetKeepLoggedIn(bool enabled)
+    {
+
+    }
+
     public async Task<string> SignIn(string email, string password)
     {
         using (HttpClient client = new HttpClient())
