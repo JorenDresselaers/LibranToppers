@@ -441,6 +441,18 @@ public class Card : NetworkBehaviour
         }
     }
 
+    public void DestroyCard()
+    {
+        if (isClient) CmdDestroyCard();
+        else OnDeath();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdDestroyCard()
+    {
+        OnDeath();
+    }
+
     /// <summary>
     /// Updates after .1 seconds to ensure data has arrived
     /// </summary>

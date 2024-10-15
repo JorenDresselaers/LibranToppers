@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dc2e7e6998e13441a8ae2a6693031fa, type: 3}
   m_Name: Single
   m_EditorClassIdentifier: 
-  deckName: 
+  deckName: Test
   cards:
-  - {fileID: 11400000, guid: 26968f834c79e944ca1068004c2a2701, type: 2}
-  - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
-  - {fileID: 11400000, guid: 0641c12a8da6ed947b42d370442d02f4, type: 2}
-  - {fileID: 11400000, guid: e366e4dd8dae1614dbd629b12f2fa583, type: 2}
-  - {fileID: 11400000, guid: e366e4dd8dae1614dbd629b12f2fa583, type: 2}
-  - {fileID: 11400000, guid: e366e4dd8dae1614dbd629b12f2fa583, type: 2}
+  - {fileID: 11400000, guid: 2da44c11400caba459e6fb96d4847ec0, type: 2}
+  - {fileID: 11400000, guid: 2da44c11400caba459e6fb96d4847ec0, type: 2}
+  - {fileID: 11400000, guid: 2da44c11400caba459e6fb96d4847ec0, type: 2}
+  - {fileID: 11400000, guid: 2da44c11400caba459e6fb96d4847ec0, type: 2}

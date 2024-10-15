@@ -140,4 +140,13 @@ public class Board : NetworkBehaviour
     {
         _player.CmdOnCardInteracted(caster, target);
     }
+
+    public bool ContainsCard(string name)
+    {
+        foreach (Card card in _cards)
+        {
+            if (card.CardName == name) return true;
+        }
+        return false;
+    }
 }

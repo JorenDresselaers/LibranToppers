@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9dc2e7e6998e13441a8ae2a6693031fa, type: 3}
-  m_Name: TestDeck
+  m_Name: AllCardsDeck
   m_EditorClassIdentifier: 
-  deckName: TestDeck
+  deckName: AllCards
   cards:
   - {fileID: 11400000, guid: 8bd8b0e247b82fa4baff6f4adae47cbe, type: 2}
   - {fileID: 11400000, guid: 8c45a6b5ee558f345a5254acf1b6fac4, type: 2}
@@ -29,3 +29,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e696e80ad836b2b4fb1c75ff92b9c067, type: 2}
   - {fileID: 11400000, guid: 1b63f61c5b75e28469dd02d1153f132e, type: 2}
   - {fileID: 11400000, guid: 050ae24de3e35574f92ae8ee4c1f4cb8, type: 2}
+  - {fileID: 11400000, guid: 2da44c11400caba459e6fb96d4847ec0, type: 2}
+  - {fileID: 11400000, guid: 29987f1a648f417448d518c5a1bd4607, type: 2}
+  - {fileID: 11400000, guid: e366e4dd8dae1614dbd629b12f2fa583, type: 2}

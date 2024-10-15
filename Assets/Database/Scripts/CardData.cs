@@ -12,7 +12,9 @@ public class CardData : ScriptableObject
     { 
         None,
         DusksOfDawn,
-        Mortal
+        Mortal,
+        AngelicLord,
+        DemonicLord,
     }
     
     [Serializable]
@@ -30,7 +32,7 @@ public class CardData : ScriptableObject
         Standard,
         Silver,
         Gold,
-        Platinunm,
+        Platinum,
         Legendary
     }
 
