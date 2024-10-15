@@ -26,15 +26,17 @@ public class CardAbility : ScriptableObject
     public bool IsTargeted => _isTargeted;
 
     public virtual void Activate(Card caster, List<Card> targets)
-    { }
+    {
+        Activate(caster);
+    }
     public virtual void Activate(Card caster, Card target)
-    { }
+    {
+        Activate(caster);
+    }
     
-    public virtual void Activate(Card caster)
-    { }
+    public virtual void Activate(Card caster) { }
 
-    protected virtual bool CanTargetCard(Card caster, Card target)
-    { return true; }
+    protected virtual bool CanTargetCard(Card caster, Card target) { return true; }
 
     public bool BoardsContainsValidTarget(Card caster, Player player)
     {

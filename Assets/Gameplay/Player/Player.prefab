@@ -1557,7 +1557,7 @@ MonoBehaviour:
   _player: {fileID: 0}
   _cardsRemainingText: {fileID: 2743438206191574028}
   _cardPrefab: {fileID: 270599761263542591, guid: 2306dfd4a721fb54a8a4a083756fca4d, type: 3}
-  _deckdata: {fileID: 11400000, guid: d0339ac775bc98c49818e1bbfa76741d, type: 2}
+  _deckdata: {fileID: 11400000, guid: 192cb54e4959b8c4abadba69dc5e16ef, type: 2}
   _hand: {fileID: 7910631997607355532}
   _moveCardToHand: 1
   _interactionIndicator: {fileID: 1185551494958366501}

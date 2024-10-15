@@ -180,7 +180,7 @@ public class TurnManager : NetworkBehaviour
 
     private void StartTurn()
     {
-        print($"Turn started for player {_currentPlayerIndex}");
+        //print($"Turn started for player {_currentPlayerIndex}");
 
         // Get the current player
         Player currentPlayer = _players[_currentPlayerIndex];
@@ -191,7 +191,7 @@ public class TurnManager : NetworkBehaviour
             if(player != currentPlayer)
             {
                 player.ServerEndTurn();
-                print($"{player.Username}'s turn started");
+                //print($"{player.Username}'s turn started");
             }
         }
 

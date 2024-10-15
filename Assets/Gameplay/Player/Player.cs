@@ -178,7 +178,7 @@ public class Player : NetworkBehaviour
         _cardsPlayedThisTurn = 0;
         RpcToggleClickableObjects(true, true, true, true);
         RpcUpdateCardInteractionIndicators();
-        print($"{_username}'s turn started");
+        //print($"{_username}'s turn started");
     }
 
     [ClientRpc]
@@ -210,8 +210,6 @@ public class Player : NetworkBehaviour
         {
             card.UpdateInteractionIndicator();
         }
-
-        print("Updating indicators");
     }
 
     [ClientRpc]
@@ -225,8 +223,6 @@ public class Player : NetworkBehaviour
         {
             card.ToggleInteractionIndicator(toggle);
         }
-
-        print("Toggling indicators to " + toggle);
     }
 
     [ClientRpc]
@@ -271,7 +267,7 @@ public class Player : NetworkBehaviour
         RpcToggleClickableObjects(false, true, true, true);
         RpcToggleCardInteractionIndicators(false, true, true);
         RpcToggleEndTurnInteractionIndicator(false);
-        print($"{_username}'s turn ended");
+        //print($"{_username}'s turn ended");
     }
 
     [Command]

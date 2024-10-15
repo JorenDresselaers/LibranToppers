@@ -8,12 +8,15 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using System;
+using static CardAbility;
+using UnityEditor.Playables;
 
 public class Card : NetworkBehaviour
 {
+    private static bool _staticIsTargeting = false; // This is stinky
+
     [SerializeField] private CardData _debugData;
-    [SyncVar]
-    private CardData _data;
+    [SyncVar] private CardData _data;
     public CardData Data => _data;
 
     [Header("Prefab Objects")]
@@ -80,6 +83,8 @@ public class Card : NetworkBehaviour
     [SyncVar] private int _interactionsThisTurn = 0;
     private bool _isTargetingAbility = false;
     [SyncVar] private CardAbility.Trigger _currentAbilityTrigger;
+    private List<CardAbility> _queuedAbilities = new List<CardAbility>();
+    [SyncVar] private bool _isQueuedAbilityFinished = true;
 
     private List<LingeringEffect> _endOfTurnEffects = new();
 
@@ -90,6 +95,10 @@ public class Card : NetworkBehaviour
     private Vector3 _originalScale;
     private Quaternion _originalRotation;
     [SerializeField] private float _inspectScale = 1.5f;
+
+    // Ability Queue
+    private Coroutine _abilityQueueCoroutine;
+    private bool _hasRemovedLastAbility = false;
 
     struct LingeringEffect
     {
@@ -297,7 +306,7 @@ public class Card : NetworkBehaviour
         {
             BeginInteractDrag();
         }
-        else if (_interactionsThisTurn < _interactionsPerTurn)
+        else if (_interactionsThisTurn < _interactionsPerTurn && !_staticIsTargeting)
         {
             foreach (CardAbility ability in _abilities)
             {
@@ -310,6 +319,17 @@ public class Card : NetworkBehaviour
                 }
             }
         }
+        else if(_isDragging)
+        {
+            if (!IsOwnedByClient || !_isClickable) return;
+
+            if (_isDragging)
+            {
+                _isDragging = false;
+                _lineRenderer.enabled = false;
+                EndDrag();
+            }
+        }
     }
 
     public void BeginInteractDrag(bool ignoreInteractLimit = false)
@@ -318,6 +338,7 @@ public class Card : NetworkBehaviour
 
         if (ignoreInteractLimit || CanInteract || _isDraggable)
         {
+            print("Starting interact for " + name);
             _startPosition = transform.position;
             _isDragging = true;
             if (!_isDraggable)
@@ -344,7 +365,7 @@ public class Card : NetworkBehaviour
         if (!other || other.Board == null) return;
 
         Debug.Log("Drag Complete with " + other.name);
-        if(other)
+        if (other)
         {
             CmdInteract(other);
             _interactionsThisTurn++;
@@ -353,41 +374,58 @@ public class Card : NetworkBehaviour
         ToggleInteractionIndicator(CanInteract);
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdSetCurrentTrigger(CardAbility.Trigger trigger)
     {
         _currentAbilityTrigger = trigger;
     }
 
     [Command]
-    private void CmdInteract(Card card)
+    private void CmdInteract(Card other)
     {
-        foreach (CardAbility ability in _abilities)
+        if (_queuedAbilities.Count > 0)
         {
-            if (ability._abilityTrigger == _currentAbilityTrigger)
+            string sender = isClientOnly ? "Client" : "Server";
+
+            print(sender + " triggered [" + _queuedAbilities[0] + "]");
+            _queuedAbilities[0].Activate(this, other);
+            if (!_hasRemovedLastAbility)
             {
-                ability.Activate(this, card);
+                _queuedAbilities.RemoveAt(0);
+                _hasRemovedLastAbility = true;
+            }
+            _isQueuedAbilityFinished = true;
+            RpcTargetNext(connectionToClient);
+        }
+        else
+        {
+            foreach (CardAbility ability in _abilities)
+            {
+                if (ability._abilityTrigger == Trigger.ASSAULT)
+                {
+                    print("Activating: " + ability.name);
+                    ability.Activate(this, other);
+                }
             }
         }
 
         if (_currentAbilityTrigger == CardAbility.Trigger.ASSAULT)
         {
-            foreach (CardAbility ability in card._abilities)
+            foreach (CardAbility ability in other._abilities)
             {
                 if (ability._abilityTrigger == CardAbility.Trigger.DEFEND)
                 {
-                    ability.Activate(card, this);
+                    ability.Activate(other, this);
                 }
             }
         }
         RpcUpdateCard();
     }
 
-    private void Interact(Card card)
+    [TargetRpc]
+    private void RpcTargetNext(NetworkConnection target)
     {
-        OnAssault();
-        card.CmdUpdateCard();
-        _interactionsThisTurn++;
+        _isQueuedAbilityFinished = true;
     }
 
     [Command(requiresAuthority = false)]
@@ -464,7 +502,6 @@ public class Card : NetworkBehaviour
                 }
             }
         }
-
     }
 
     [Command(requiresAuthority = false)]
@@ -570,18 +607,79 @@ public class Card : NetworkBehaviour
             {
                 if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player))
                 {
-                    _isTargetingAbility = true;
-                    CmdSetCurrentTrigger(trigger);
-                    BeginInteractDrag(true);
+                    // Queue the ability for targeting
+                    _queuedAbilities.Add(ability);
                 }
                 else
                 {
-                    ability.Activate(this);
+                    ability.Activate(this); // Non-targeted abilities are executed immediately
                 }
             }
         }
-        if(updateCard) CmdUpdateCard();
+
+        // Start processing the queue if there are any queued abilities
+        if (_queuedAbilities.Count > 0 && _isQueuedAbilityFinished)
+        {
+            if(_abilityQueueCoroutine != null) StopCoroutine(_abilityQueueCoroutine);
+            if(IsOwnedByClient) _abilityQueueCoroutine = StartCoroutine(WaitForQueuedAbility());
+        }
+
+        if (updateCard) CmdUpdateCard();
     }
+
+    // EXPERIMENTAL ABILITY QUEUE
+
+    private void TriggerAbility(CardAbility ability)
+    {
+        if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player))
+        {
+            string sender = isClientOnly ? "Client" : "Server";
+            print(sender + " is targeting [" + ability.name + "]");
+
+            _isTargetingAbility = true;
+            _isQueuedAbilityFinished = false;
+            _staticIsTargeting = true;
+            BeginInteractDrag(true);
+        }
+        else
+        {
+            ability.Activate(this);
+            _isQueuedAbilityFinished = true;
+            _staticIsTargeting = false;
+            _isTargetingAbility = false;
+        }
+        CmdUpdateCard();
+    }
+
+    private IEnumerator WaitForQueuedAbility()
+    {
+        if (isOwned)
+        {
+            print("Server: " + isServer + ", Client: " + isClient);
+
+            print("Queueing " + _queuedAbilities.Count + " abilities");
+            while (_queuedAbilities.Count > 0)
+            {
+                var currentAbility = _queuedAbilities[0];
+
+                _isQueuedAbilityFinished = false;
+                _staticIsTargeting = true;
+                _hasRemovedLastAbility = false;
+                TriggerAbility(currentAbility);
+
+                yield return new WaitUntil(() => _isQueuedAbilityFinished);
+                if (!_hasRemovedLastAbility)
+                {
+                    _queuedAbilities.RemoveAt(0);
+                    _hasRemovedLastAbility = true;
+                }
+            }
+            _staticIsTargeting = false;
+            _isTargetingAbility = false;
+        }
+    }
+
+    // END EXPERIMENTAL STUFF
 
     private void OnPlayed()
     {
@@ -654,6 +752,8 @@ public class Card : NetworkBehaviour
             _endOfTurnEffects.RemoveAt(toRemove);
         }
         ToggleInteractionIndicator(false);
+        _staticIsTargeting = false;
+        _isTargetingAbility = false;
     }
 
     public void OnAuraCheck()

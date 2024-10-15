@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4e09205181a8364abf7b299d902577f, type: 3}
-  m_Name: Navari of House Dawngrasp AssaultAbility 1
+  m_Script: {fileID: 11500000, guid: b16f04ab6c6a9cf4997a5142a8d6fc12, type: 3}
+  m_Name: Belle Hosoda (Fallen) SharpshooterAbility 1
   m_EditorClassIdentifier: 
-  _abilityTrigger: 2
-  _isTargeted: 0
+  _abilityTrigger: 1
+  _isTargeted: 1
+  _useCardDamage: 0
+  _damage: 2
