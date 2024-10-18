@@ -15,7 +15,7 @@ public class SharpshooterConditionalAbility : CardAbility
         if (CanTargetCard(caster, target)) target.Assault(_useCardDamage ? caster.Damage : _damage);
     }
 
-    public override bool BoardsContainsValidTarget(Card caster, Player player)
+    public override bool BoardsContainsValidTarget(Card caster, Player player, bool canTargetSelf = true)
     {
         bool canActivate = false;
         foreach(string currentAlly in _requiredAlliedCards)
@@ -24,7 +24,7 @@ public class SharpshooterConditionalAbility : CardAbility
         }
 
         if (canActivate)
-            return base.BoardsContainsValidTarget(caster, player);
+            return base.BoardsContainsValidTarget(caster, player, canTargetSelf);
         else
             return false;
     }
