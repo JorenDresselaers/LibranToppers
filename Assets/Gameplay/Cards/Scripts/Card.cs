@@ -617,7 +617,7 @@ public class Card : NetworkBehaviour
         {
             if (ability != null && ability._abilityTrigger == trigger)
             {
-                if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player))
+                if (ability.IsTargeted && ability.BoardsContainsValidTarget(this, _player, false))
                 {
                     // Queue the ability for targeting
                     _queuedAbilities.Add(ability);

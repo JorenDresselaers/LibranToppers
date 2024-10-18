@@ -38,7 +38,7 @@ public class CardAbility : ScriptableObject
 
     protected virtual bool CanTargetCard(Card caster, Card target) { return true; }
 
-    public virtual bool BoardsContainsValidTarget(Card caster, Player player)
+    public virtual bool BoardsContainsValidTarget(Card caster, Player player, bool canTargetSelf = true)
     {
         if (player == null) return false;
         List<Card> cardsOnBoards = new();
@@ -47,7 +47,7 @@ public class CardAbility : ScriptableObject
 
         foreach(Card card in cardsOnBoards)
         {
-            if (CanTargetCard(caster, card)) return true;
+            if (CanTargetCard(caster, card) && (canTargetSelf || card != caster)) return true;
         }
         return false;
     }
