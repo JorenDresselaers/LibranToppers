@@ -26,6 +26,9 @@ public class LibranToppersNetworkManager : NetworkManager
     /// </summary>
     public string relayJoinCode = "";
 
+    [Header("Prefabs")]
+    [SerializeField] private AIPlayer _aiPlayer;
+    
     public override void Awake()
     {
         base.Awake();

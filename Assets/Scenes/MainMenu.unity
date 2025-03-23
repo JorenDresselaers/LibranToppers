@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -448,6 +447,7 @@ MonoBehaviour:
   evaluationInterval: 3
   timeInterpolationGui: 0
   relayJoinCode: 
+  _aiPlayer: {fileID: 6460416840643406971, guid: 7d3315610af67c04a8659e6f591ee40b, type: 3}
 --- !u!4 &164228154
 Transform:
   m_ObjectHideFlags: 0

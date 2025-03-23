@@ -10,45 +10,45 @@ using UnityEngine.UIElements;
 public class Player : NetworkBehaviour
 {
     [Header("Scene Objects")]
-    [SerializeField] private GameObject _gameElements;
+    [SerializeField] protected GameObject _gameElements;
 
-    [SerializeField] private Deck _deck;
+    [SerializeField] protected Deck _deck;
     public Deck Deck => _deck;
 
-    [SerializeField] private Hand _hand;
+    [SerializeField] protected Hand _hand;
     public Hand Hand => _hand;
 
-    [SerializeField] private Board _board;
+    [SerializeField] protected Board _board;
     public Board Board => _board;
 
-    [SerializeField] private Graveyard _graveYard;
+    [SerializeField] protected Graveyard _graveYard;
     public Graveyard Graveyard => _graveYard;
 
-    [SerializeField] private Player _opponent;
+    [SerializeField] protected Player _opponent;
     public Player Opponent => _opponent;
 
     public EndTurnOnClick _endTurnButton;
-    private TurnManager _turnManager;
+    protected TurnManager _turnManager;
 
     [Header("Settings")]
-    [SerializeField] private bool _drawCardsAutomatically = true;
-    [SerializeField] private int _cardsDrawnPerTurn = 5;
-    [SerializeField] private int _cardsPlayedPerTurn = 1;
-    private int _cardsPlayedThisTurn = 0;
+    [SerializeField] protected bool _drawCardsAutomatically = true;
+    [SerializeField] protected int _cardsDrawnPerTurn = 5;
+    [SerializeField] protected int _cardsPlayedPerTurn = 1;
+    protected int _cardsPlayedThisTurn = 0;
     public bool CanPlayCards => _cardsPlayedThisTurn < _cardsPlayedPerTurn;
 
-    [SyncVar] private string _username;
+    [SyncVar] protected string _username;
     public string Username => _username;
 
     [Header("UI")]
-    [SerializeField] private TMP_Text _name;
+    [SerializeField] protected TMP_Text _name;
 
     public int TotalCardsRemaining => _hand.Cards.Count + _board.Cards.Count + _deck.CardsData.Count;
     public int CardsLeftInOffensive => _hand.Cards.Count + _board.Cards.Count;
 
-    private Coroutine _drawCardsCoroutine;
+    protected Coroutine _drawCardsCoroutine;
 
-    private void Awake()
+    protected void Awake()
     {
         Deck._player = this;
         Hand._player = this;
@@ -81,13 +81,13 @@ public class Player : NetworkBehaviour
     }
     
     [ClientRpc]
-    private void RpcToggleVisuals(bool enabled)
+    protected void RpcToggleVisuals(bool enabled)
     {
         _gameElements.SetActive(enabled);
     }
 
     [Command]
-    private void CmdToggleVisuals(bool enabled)
+    protected void CmdToggleVisuals(bool enabled)
     {
         RpcToggleVisuals(enabled);
     }
@@ -110,7 +110,7 @@ public class Player : NetworkBehaviour
         else CmdSetOpponent(opponent);
     }
 
-    private IEnumerator SetNameAfterSeconds(float seconds)
+    protected IEnumerator SetNameAfterSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
         if (APIManager.Instance.IsLoggedIn) CmdSetName(APIManager.Instance.UserData.username);
@@ -164,7 +164,7 @@ public class Player : NetworkBehaviour
     }
 
     [Server]
-    public void ServerStartTurn()
+    virtual public void ServerStartTurn()
     {
         List<Card> cardsToUpdate = new List<Card>();
         cardsToUpdate.AddRange(_hand.Cards);
@@ -182,7 +182,7 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcToggleClickableObjects(bool isClickable, bool includeDeck, bool includeHand, bool includeBoard)
+    protected void RpcToggleClickableObjects(bool isClickable, bool includeDeck, bool includeHand, bool includeBoard)
     {
         bool isThisPlayer = NetworkClient.localPlayer == this;
 
@@ -200,7 +200,7 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcUpdateCardInteractionIndicators()
+    protected void RpcUpdateCardInteractionIndicators()
     {
         List<Card> cardsToToggle = new List<Card>();
         cardsToToggle.AddRange(_hand.Cards);
@@ -213,7 +213,7 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcToggleCardInteractionIndicators(bool toggle, bool includeHand, bool includeBoard)
+    protected void RpcToggleCardInteractionIndicators(bool toggle, bool includeHand, bool includeBoard)
     {
         List<Card> cardsToToggle = new List<Card>();
         if (includeHand) cardsToToggle.AddRange(_hand.Cards);
@@ -226,13 +226,13 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcToggleEndTurnInteractionIndicator(bool toggle)
+    protected void RpcToggleEndTurnInteractionIndicator(bool toggle)
     {
         _endTurnButton.ToggleInteractionIndicator(toggle);
     }
 
     [Server]
-    private IEnumerator DrawCards()
+    protected IEnumerator DrawCards()
     {
         print("Drawing cards for " + _username);
         for (int i = 0; i < _cardsDrawnPerTurn; i++)
@@ -279,7 +279,7 @@ public class Player : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcSetName(string name)
+    protected void RpcSetName(string name)
     {
         print("Setting name of " + name + " on client");
         if (_name) _name.text = name;

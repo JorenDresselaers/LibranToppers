@@ -302,6 +302,7 @@ public class Card : NetworkBehaviour
 
     private void OnMouseDown()
     {
+        print("Clicking mouse down for " + CardName);
         if (_board == null)
         {
             BeginInteractDrag();
@@ -338,7 +339,7 @@ public class Card : NetworkBehaviour
 
         if (ignoreInteractLimit || CanInteract || _isDraggable)
         {
-            print("Starting interact for " + name);
+            print("Starting interact for " + CardName);
             _startPosition = transform.position;
             _isDragging = true;
             if (!_isDraggable)
@@ -364,7 +365,7 @@ public class Card : NetworkBehaviour
     {
         if (!other || other.Board == null) return;
 
-        Debug.Log("Drag Complete with " + other.name);
+        Debug.Log("Drag Complete with " + other.CardName);
         if (other)
         {
             CmdInteract(other);
@@ -381,7 +382,7 @@ public class Card : NetworkBehaviour
     }
 
     [Command]
-    private void CmdInteract(Card other)
+    public void CmdInteract(Card other)
     {
         if (_queuedAbilities.Count > 0)
         {
@@ -513,7 +514,17 @@ public class Card : NetworkBehaviour
                     OnDragComplete(hit.transform.GetComponent<Card>());
                 }
             }
+            else
+            {
+                ShowTargeting();
+            }
         }
+    }
+
+    private void ShowTargeting()
+    {
+        _isDragging = true;
+        _lineRenderer.enabled = true;
     }
 
     [Command(requiresAuthority = false)]
